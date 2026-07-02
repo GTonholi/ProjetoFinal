@@ -3,6 +3,7 @@ package com.projetocafeteria.model;
 import com.projetocafeteria.model.bebida.Bebida;
 import com.projetocafeteria.model.comida.Comida;
 import com.projetocafeteria.model.pagamento.MetodoPagamento;
+import com.projetocafeteria.model.status.StatusPedido;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,11 +22,27 @@ public class Pedido {
         
     }
 
+    public void realizarPagamento(){
+        status.pagar(this);
+    }
+
+    public void cancelarPedido(){
+        status.cancelar(this);
+    }
+
     public void AdicionarBebida(Bebida bebida){
         bebidas.add(bebida);
     }
 
     public void AdicionarComida(Comida comida){
         comidas.add(comida);
+    }
+
+    public void setStatus(StatusPedido status){
+        this.status = status;
+    }
+
+    public String getNomeCliente(){
+        return cliente.getNome();
     }
 }
