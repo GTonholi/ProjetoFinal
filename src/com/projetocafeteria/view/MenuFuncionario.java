@@ -11,13 +11,18 @@ public class MenuFuncionario {
             loginService.logarFuncionario();
         }
 
+        if (!loginService.isUsuarioLogado()) {
+            System.out.println("Não foi possível autenticar. Encerrando.");
+            return;
+        }
+
         Scanner sc = new Scanner(System.in);
         int escolha = selecionarOpcao(sc);
 
         processarEscolha(escolha);
     }
     
-    private static int selecionarOpcao(Scanner sc) {
+    private int selecionarOpcao(Scanner sc) {
         exibirMenu();
         
         while (true) {
@@ -34,12 +39,13 @@ public class MenuFuncionario {
         }
     }
 
-    private static void exibirMenu() {
-        System.out.println("Bem vindo, (Nome do funcionario)! No que podemos ajudar?");
+    private void exibirMenu() {
+        String nome = loginService.getNomeFuncionarioLogado();
+        System.out.println("Bem vindo, " + nome + ". No que podemos ajudar?");
         System.out.println("[1] Atualizar estado do Pedido");
     }
 
-    private static void processarEscolha(int escolha) {
+    private void processarEscolha(int escolha) {
         switch (escolha) {
             default -> { System.out.println("Opção Inválida!");
             }
