@@ -1,25 +1,18 @@
 package com.projetocafeteria.model;
 
-import com.projetocafeteria.model.bebida.Bebida;
-import com.projetocafeteria.model.comida.Comida;
-import com.projetocafeteria.model.pagamento.MetodoPagamento;
 import com.projetocafeteria.model.status.StatusPedido;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Pedido {
     private int id;
     private Cliente cliente;
-    private Funcionario atendente;
-    private List<Bebida> bebidas = new ArrayList<>();
-    private List<Comida> comidas = new ArrayList<>();
-    private double total;
+    private Funcionario atendente; // ainda não sei se vai ser necessário
     private StatusPedido status; 
-    private MetodoPagamento metodoPagamento;
+    private Preparo preparo;
+    private final Carrinho carrinho = new Carrinho();
+    //private MetodoPagamento metodoPagamento;
 
     public Pedido(){
-        this.total = 0.0;
-        
+        this.preparo = Preparo.PENDENTE;
     }
 
     public void realizarPagamento(){
@@ -30,19 +23,23 @@ public class Pedido {
         status.cancelar(this);
     }
 
-    public void AdicionarBebida(Bebida bebida){
-        bebidas.add(bebida);
-    }
-
-    public void AdicionarComida(Comida comida){
-        comidas.add(comida);
-    }
-
     public void setStatus(StatusPedido status){
         this.status = status;
     }
 
+    public void prepararPedido(){
+        this.preparo = Preparo.PREPARANDO;
+    }
+
     public String getNomeCliente(){
         return cliente.getNome();
+    }
+
+    public double calcularTotal(){
+        return carrinho.calcularTotal();
+    }
+
+    public Preparo consultarPreparo(){
+        return preparo;
     }
 }

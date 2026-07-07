@@ -8,6 +8,7 @@ public class StatusPendente implements StatusPedido{
     public void pagar(Pedido pedido){
         System.out.println("Pedido pago!");
         pedido.setStatus(new StatusPago());
+        pedido.prepararPedido();
     }
 
     @Override
