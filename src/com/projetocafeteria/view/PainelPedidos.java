@@ -1,9 +1,8 @@
 package com.projetocafeteria.view;
 
+import com.projetocafeteria.model.Pedido;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.projetocafeteria.model.Pedido;
 
 public class PainelPedidos {
     private final List<Pedido> pedidos = new ArrayList<>();
@@ -20,7 +19,27 @@ public class PainelPedidos {
 
         System.out.println("=== Painel de Pedidos ===");
         for (Pedido pedido : pedidos) {
-            System.out.printf("Pedido #"+ pedido.getId() +" - Cliente: "+ pedido.getNomeCliente() +" - Status:" + pedido.consultarPreparo());
+            imprimirPedido(pedido);
         }
+    }
+
+    public List<Pedido> listarPedidosEmAndamento() {
+        return pedidos.stream()
+                .filter(p -> !p.pedidoEstaEntregue())
+                .filter(p -> !p.estaCancelado())
+                .toList();
+    }
+
+    public Pedido buscarPorId(int id) {
+        for (Pedido pedido : pedidos) {
+            if (pedido.getId() == id) {
+                return pedido;
+            }
+        }
+        return null;
+    }
+
+    private void imprimirPedido(Pedido pedido) {
+        System.out.printf("\nPedido #"+ pedido.getId() +" - Cliente: "+ pedido.getNomeCliente() +" - Status:" + pedido.consultarPreparo());
     }
 }

@@ -16,8 +16,12 @@ public class Main{
             MenuCliente menuCliente = new MenuCliente(sc);
             MenuFuncionario menuFuncionario = new MenuFuncionario(sc);
         
-            int escolha = selecionarOpcao(sc);
-            processarEscolha(escolha, painelPedidos, pedidoService, menuCliente, menuFuncionario);
+            boolean continuar = true;
+            while(continuar){
+                int escolha = selecionarOpcao(sc);
+                continuar = processarEscolha(escolha, painelPedidos, pedidoService, menuCliente, menuFuncionario);
+            }
+            System.out.println("Encerrando o sistema. Até logo!");
         }
     }
 
@@ -28,10 +32,10 @@ public class Main{
             try {
                 System.out.print("Opção: ");
                 int opcao = Integer.parseInt(sc.nextLine().trim());
-                if (opcao == 1 || opcao == 2 || opcao == 3) {
+                if (opcao >= 0 && opcao <= 3) {
                     return opcao;
                 }
-                System.out.println("Opção inválida! Digite 1, 2 ou 3.");
+                System.out.println("Opção inválida! Digite 0, 1, 2 ou 3.");
             } catch (NumberFormatException e) {
                 System.out.println("Entrada inválida! Digite um número.");
             }
@@ -39,19 +43,22 @@ public class Main{
     }
 
     private static void exibirMenu() {
-        System.out.println("Visualizar painel de pedidos [1]");
+        System.out.println("\nVisualizar painel de pedidos [1]");
         System.out.println("Acessar como:");
         System.out.println("[2] Cliente");
         System.out.println("[3] Funcionário");
+        System.out.println("[0] Sair");
     }
 
-    private static void processarEscolha(int escolha, PainelPedidos painelPedidos, PedidoService pedidoService, MenuCliente menuCliente, MenuFuncionario menuFuncionario) {
+    private static boolean processarEscolha(int escolha, PainelPedidos painelPedidos, PedidoService pedidoService, MenuCliente menuCliente, MenuFuncionario menuFuncionario) {
         switch (escolha) {
+            case 0 -> { return false; }
             case 1 -> painelPedidos.exibir();
             case 2 -> menuCliente.run(pedidoService, painelPedidos);
-            case 3 -> menuFuncionario.run();
+            case 3 -> menuFuncionario.run(painelPedidos);
             default -> { System.out.println("Opção Inválida!");
             }
         }
+        return true;
     }
 }

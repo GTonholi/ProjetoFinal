@@ -7,8 +7,8 @@ public class Pedido {
     private static int proximoId = 1;
 
     private final int id;
-    private Cliente cliente;
-    private Funcionario atendente; // ainda não sei se vai ser necessário
+    private final Cliente cliente;
+    //private Funcionario atendente; // ainda não sei se vai ser necessário
     private StatusPedido status; 
     private Preparo preparo;
     private final Carrinho carrinho = new Carrinho();
@@ -33,8 +33,23 @@ public class Pedido {
         this.status = status;
     }
 
-    public void prepararPedido(){
-        this.preparo = Preparo.PREPARANDO;
+    public boolean estaCancelado(){
+        return status.estaCancelado();
+    }
+
+    public boolean pedidoEstaEntregue(){
+        return this.preparo.equals(Preparo.ENTREGUE);
+    }
+
+    public void avancarPreparo() {
+        Preparo[] valores = Preparo.values();
+        int proximoIndex = preparo.ordinal() + 1;
+
+        if (proximoIndex < valores.length) {
+            this.preparo = valores[proximoIndex];
+        } else {
+            System.out.println("Pedido já está no estado final (" + preparo + ").");
+        }
     }
 
     public int getId(){
