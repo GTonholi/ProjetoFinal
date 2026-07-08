@@ -5,4 +5,8 @@ import com.projetocafeteria.model.Pedido;
 public interface StatusPedido {
     public void pagar(Pedido pedido);
     public void cancelar(Pedido pedido);
+
+    default boolean estaCancelado() {
+        return false;
+    }
 }

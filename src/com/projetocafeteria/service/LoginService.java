@@ -18,6 +18,12 @@ public class LoginService {
         return this.logado;
     }
 
+    public void deslogar(){
+        this.logado = false;
+        this.idFuncionarioLogado = 0;
+        this.nomeFuncionarioLogado = null;
+    }
+
     public int getIdFuncionarioLogado() {
         return idFuncionarioLogado;
     }

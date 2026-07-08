@@ -12,4 +12,9 @@ public class StatusCancelado implements StatusPedido{
     public void cancelar(Pedido pedido){
         System.out.println("Pedido já está cancelado.");
     }
+
+    @Override
+    public boolean estaCancelado() {
+        return true;
+    }
 }
