@@ -4,8 +4,9 @@ import com.projetocafeteria.model.Pedido;
 
 public class StatusCancelado implements StatusPedido{
     @Override
-    public void pagar(Pedido pedido){
+    public boolean  pagar(Pedido pedido){
         System.out.println("Pedido cancelado. Não é possível realizar o pagamento.");
+        return false;
     }
 
     @Override 

@@ -1,5 +1,6 @@
 package com.projetocafeteria.model;
 
+import com.projetocafeteria.model.pagamento.MetodoPagamento;
 import com.projetocafeteria.model.status.StatusPedido;
 import com.projetocafeteria.model.status.StatusPendente;
 
@@ -12,7 +13,7 @@ public class Pedido {
     private StatusPedido status; 
     private Preparo preparo;
     private final Carrinho carrinho = new Carrinho();
-    //private MetodoPagamento metodoPagamento;
+    private MetodoPagamento metodoPagamento;
 
     public Pedido(Cliente cliente){
         this.preparo = Preparo.PENDENTE;
@@ -21,8 +22,20 @@ public class Pedido {
         this.status = new StatusPendente();
     }
 
-    public void realizarPagamento(){
-        status.pagar(this);
+    public void definirMetodoPagamento(MetodoPagamento metodoPagamento) {
+        this.metodoPagamento = metodoPagamento;
+    }
+
+    public boolean realizarPagamento(){
+        if (metodoPagamento == null) {
+            System.out.println("Nenhum método de pagamento selecionado.");
+            return false;
+        }
+        return status.pagar(this);
+    }
+
+    public boolean validarPagamento(){
+        return this.metodoPagamento.realizarPagamento(this.calcularTotal());    
     }
 
     public void cancelarPedido(){

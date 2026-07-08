@@ -5,10 +5,17 @@ import com.projetocafeteria.model.Pedido;
 public class StatusPendente implements StatusPedido{
 
     @Override
-    public void pagar(Pedido pedido){
-        System.out.println("Pedido pago!");
-        pedido.setStatus(new StatusPago());
-        pedido.avancarPreparo();
+    public boolean pagar(Pedido pedido){
+        boolean sucesso = pedido.validarPagamento();
+
+        if(sucesso){
+            pedido.setStatus(new StatusPago());
+            pedido.avancarPreparo();
+        } 
+        else{
+            System.out.println("Pagamento não foi concluído. Pedido continua pendente.");
+        }
+        return sucesso;
     }
 
     @Override
