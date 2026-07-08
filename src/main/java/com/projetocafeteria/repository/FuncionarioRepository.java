@@ -1,8 +1,9 @@
 package com.projetocafeteria.repository;
 
-import com.projetocafeteria.model.Funcionario;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.projetocafeteria.model.Funcionario;
 
 public final class FuncionarioRepository {
     private final List<Funcionario> funcionarios = new ArrayList<>();

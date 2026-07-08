@@ -1,7 +1,8 @@
 package com.projetocafeteria.view;
 
-import com.projetocafeteria.service.PedidoService;
 import java.util.Scanner;
+
+import com.projetocafeteria.service.PedidoService;
 
 public class MenuCliente {
     private final Scanner sc;

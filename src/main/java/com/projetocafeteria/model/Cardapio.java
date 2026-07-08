@@ -1,12 +1,13 @@
 package com.projetocafeteria.model;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+
 import com.projetocafeteria.model.bebida.Bebida;
 import com.projetocafeteria.model.bebida.Cafe;
 import com.projetocafeteria.model.comida.Bolo;
 import com.projetocafeteria.model.comida.Comida;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Supplier;
 
 public class Cardapio {
 private final List<Supplier<Comida>> comidasDisponiveis = new ArrayList<>();

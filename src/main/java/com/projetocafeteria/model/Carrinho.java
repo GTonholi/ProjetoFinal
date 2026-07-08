@@ -1,8 +1,9 @@
 package com.projetocafeteria.model;
 
+import java.util.HashMap;
+
 import com.projetocafeteria.model.bebida.Bebida;
 import com.projetocafeteria.model.comida.Comida;
-import java.util.HashMap;
 
 public class Carrinho {
     private final HashMap<Bebida, Integer> bebidas = new HashMap<>();
