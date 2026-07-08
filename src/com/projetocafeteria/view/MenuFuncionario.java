@@ -5,6 +5,11 @@ import java.util.Scanner;
 
 public class MenuFuncionario {
     private final LoginService loginService = new LoginService();
+    private final Scanner sc;
+
+    public MenuFuncionario(Scanner sc){
+        this.sc = sc;
+    }
 
     public void run(){
         if(!loginService.isUsuarioLogado()){
@@ -16,13 +21,12 @@ public class MenuFuncionario {
             return;
         }
 
-        Scanner sc = new Scanner(System.in);
-        int escolha = selecionarOpcao(sc);
+        int escolha = selecionarOpcao();
 
         processarEscolha(escolha);
     }
     
-    private int selecionarOpcao(Scanner sc) {
+    private int selecionarOpcao() {
         exibirMenu();
         
         while (true) {

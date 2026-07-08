@@ -4,12 +4,15 @@ import com.projetocafeteria.service.PedidoService;
 import java.util.Scanner;
 
 public class MenuCliente {
+    private final Scanner sc;
+
+    public MenuCliente(Scanner sc){
+        this.sc = sc;
+    }
     
     public void run(PedidoService pedidoService, PainelPedidos painelPedidos){
-        Scanner sc = new Scanner(System.in);
         int escolha = selecionarOpcao(sc);
-
-        processarEscolha(escolha, painelPedidos);
+        processarEscolha(escolha, pedidoService, painelPedidos);
     }
     
     private static int selecionarOpcao(Scanner sc) {
@@ -35,10 +38,9 @@ public class MenuCliente {
         System.out.println("[2] Ver Painel de Pedidos");
     }
 
-    private static void processarEscolha(int escolha, PainelPedidos painelPedidos) {
-        PedidoService pedidoService = new PedidoService();
+    private static void processarEscolha(int escolha, PedidoService pedidoService, PainelPedidos painelPedidos) {
         switch (escolha) {
-            case 1 -> pedidoService.realizarPedido();
+            case 1 -> pedidoService.realizarPedido(painelPedidos);
             case 2 -> painelPedidos.exibir();
             default -> { System.out.println("Opção Inválida!");
             }

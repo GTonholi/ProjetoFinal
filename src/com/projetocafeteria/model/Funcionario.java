@@ -1,7 +1,7 @@
 package com.projetocafeteria.model;
 
 public class Funcionario {
-    private int id;
+    private final int id;
     private final String nome;
     private final String login;
     private final String senha;

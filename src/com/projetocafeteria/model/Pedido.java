@@ -1,9 +1,12 @@
 package com.projetocafeteria.model;
 
 import com.projetocafeteria.model.status.StatusPedido;
+import com.projetocafeteria.model.status.StatusPendente;
 
 public class Pedido {
-    private int id;
+    private static int proximoId = 1;
+
+    private final int id;
     private Cliente cliente;
     private Funcionario atendente; // ainda não sei se vai ser necessário
     private StatusPedido status; 
@@ -11,8 +14,11 @@ public class Pedido {
     private final Carrinho carrinho = new Carrinho();
     //private MetodoPagamento metodoPagamento;
 
-    public Pedido(){
+    public Pedido(Cliente cliente){
         this.preparo = Preparo.PENDENTE;
+        this.cliente = cliente;
+        this.id = proximoId++;
+        this.status = new StatusPendente();
     }
 
     public void realizarPagamento(){
@@ -31,6 +37,10 @@ public class Pedido {
         this.preparo = Preparo.PREPARANDO;
     }
 
+    public int getId(){
+        return id;
+    }
+
     public String getNomeCliente(){
         return cliente.getNome();
     }
@@ -41,5 +51,9 @@ public class Pedido {
 
     public Preparo consultarPreparo(){
         return preparo;
+    }
+
+    public Carrinho getCarrinho() {
+        return carrinho;
     }
 }
