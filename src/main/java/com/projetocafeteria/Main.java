@@ -1,10 +1,11 @@
 package com.projetocafeteria;
 
+import java.util.Scanner;
+
 import com.projetocafeteria.service.PedidoService;
 import com.projetocafeteria.view.MenuCliente;
 import com.projetocafeteria.view.MenuFuncionario;
 import com.projetocafeteria.view.PainelPedidos;
-import java.util.Scanner;
 
 public class Main{
 

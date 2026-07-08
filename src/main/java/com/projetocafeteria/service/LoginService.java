@@ -1,17 +1,20 @@
 package com.projetocafeteria.service;
 
+import java.util.Scanner;
+
 import com.projetocafeteria.model.Funcionario;
 import com.projetocafeteria.repository.FuncionarioRepository;
-import java.util.Scanner;
 
 public class LoginService {
     private boolean logado;
     private int idFuncionarioLogado;
     private String nomeFuncionarioLogado;
     private final FuncionarioRepository funcionarioRepository;
+    private final Scanner sc;
 
-    public LoginService() {
+    public LoginService(Scanner sc) {
         this.funcionarioRepository = new FuncionarioRepository();
+        this.sc = sc;
     }
 
     public boolean isUsuarioLogado() {
@@ -33,7 +36,6 @@ public class LoginService {
     }
 
     public void logarFuncionario() {
-        Scanner sc = new Scanner(System.in);
         int tentativas = 3;
 
         while (tentativas > 0 && !logado) {

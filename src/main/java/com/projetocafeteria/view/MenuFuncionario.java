@@ -1,16 +1,18 @@
 package com.projetocafeteria.view;
 
-import com.projetocafeteria.model.Pedido;
-import com.projetocafeteria.service.LoginService;
 import java.util.List;
 import java.util.Scanner;
 
+import com.projetocafeteria.model.Pedido;
+import com.projetocafeteria.service.LoginService;
+
 public class MenuFuncionario {
-    private final LoginService loginService = new LoginService();
+    private final LoginService loginService;
     private final Scanner sc;
 
     public MenuFuncionario(Scanner sc){
         this.sc = sc;
+        this.loginService = new LoginService(this.sc);
     }
 
     public void run(PainelPedidos painelPedidos){

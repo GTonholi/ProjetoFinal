@@ -1,5 +1,9 @@
 package com.projetocafeteria.service;
 
+import java.util.List;
+import java.util.Scanner;
+import java.util.function.Supplier;
+
 import com.projetocafeteria.model.Cardapio;
 import com.projetocafeteria.model.Cliente;
 import com.projetocafeteria.model.Pedido;
@@ -13,9 +17,6 @@ import com.projetocafeteria.model.pagamento.Dinheiro;
 import com.projetocafeteria.model.pagamento.MetodoPagamento;
 import com.projetocafeteria.model.pagamento.Pix;
 import com.projetocafeteria.view.PainelPedidos;
-import java.util.List;
-import java.util.Scanner;
-import java.util.function.Supplier;
 
 public class PedidoService {
     private final Scanner sc;

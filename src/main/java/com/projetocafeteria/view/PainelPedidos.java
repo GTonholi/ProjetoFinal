@@ -1,8 +1,8 @@
 package com.projetocafeteria.view;
 
-import com.projetocafeteria.model.Pedido;
 import java.util.ArrayList;
 import java.util.List;
+import com.projetocafeteria.model.Pedido;
 
 public class PainelPedidos {
     private final List<Pedido> pedidos = new ArrayList<>();
