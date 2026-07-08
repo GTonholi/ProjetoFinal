@@ -7,6 +7,11 @@ import com.projetocafeteria.model.bebida.Bebida;
 import com.projetocafeteria.model.bebida.Leite;
 import com.projetocafeteria.model.comida.Cobertura;
 import com.projetocafeteria.model.comida.Comida;
+import com.projetocafeteria.model.pagamento.CartaoCredito;
+import com.projetocafeteria.model.pagamento.CartaoDebito;
+import com.projetocafeteria.model.pagamento.Dinheiro;
+import com.projetocafeteria.model.pagamento.MetodoPagamento;
+import com.projetocafeteria.model.pagamento.Pix;
 import com.projetocafeteria.view.PainelPedidos;
 import java.util.List;
 import java.util.Scanner;
@@ -43,10 +48,16 @@ public class PedidoService {
             }
         }
 
-        pedido.realizarPagamento();
-        painelPedidos.adicionarPedido(pedido);
-
-        System.out.printf("Pedido #"+ pedido.getId() +" finalizado! Total: R$ %.2f%n",  pedido.calcularTotal());
+        escolherMetodoPagamento(pedido);
+        boolean pago = pedido.realizarPagamento();
+        
+        if(pago){
+            painelPedidos.adicionarPedido(pedido);
+            System.out.printf("Pedido #"+ pedido.getId() +" finalizado! Total: R$ %.2f%n",  pedido.calcularTotal());
+        }
+        else{
+            System.out.println("Não foi possível concluir o pagamento. Pedido não foi registrado.");
+        }
     }
 
     private void adicionarComida(Pedido pedido) {
@@ -131,6 +142,20 @@ public class PedidoService {
                 System.out.println("Digite um número válido.");
             }
         }
+    }
+
+    private void escolherMetodoPagamento(Pedido pedido) {
+        List<MetodoPagamento> opcoes = List.of(
+                new Dinheiro(), new Pix(), new CartaoCredito(), new CartaoDebito()
+        );
+
+        System.out.println("Escolha o método de pagamento:");
+        for (int i = 0; i < opcoes.size(); i++) {
+            System.out.printf("["+ (i+1) +"] %s%n", opcoes.get(i).getDescricao());
+        }
+
+        int escolha = lerOpcaoNumerica(opcoes.size());
+        pedido.definirMetodoPagamento(opcoes.get(escolha - 1));
     }
 
 }
