@@ -9,13 +9,15 @@ import java.util.Scanner;
 public class Main{
 
     public static void main(String[] args) {
-        PainelPedidos painelPedidos = new PainelPedidos();
-        MenuCliente menuCliente = new MenuCliente();
-        MenuFuncionario menuFuncionario = new MenuFuncionario();
-        
         try (Scanner sc = new Scanner(System.in)) {
+            PainelPedidos painelPedidos = new PainelPedidos();
+            PedidoService pedidoService = new PedidoService(sc);
+
+            MenuCliente menuCliente = new MenuCliente(sc);
+            MenuFuncionario menuFuncionario = new MenuFuncionario(sc);
+        
             int escolha = selecionarOpcao(sc);
-            processarEscolha(escolha, painelPedidos, menuCliente, menuFuncionario);
+            processarEscolha(escolha, painelPedidos, pedidoService, menuCliente, menuFuncionario);
         }
     }
 
@@ -43,8 +45,7 @@ public class Main{
         System.out.println("[3] Funcionário");
     }
 
-    private static void processarEscolha(int escolha, PainelPedidos painelPedidos, MenuCliente menuCliente, MenuFuncionario menuFuncionario) {
-        PedidoService pedidoService = new PedidoService();
+    private static void processarEscolha(int escolha, PainelPedidos painelPedidos, PedidoService pedidoService, MenuCliente menuCliente, MenuFuncionario menuFuncionario) {
         switch (escolha) {
             case 1 -> painelPedidos.exibir();
             case 2 -> menuCliente.run(pedidoService, painelPedidos);
