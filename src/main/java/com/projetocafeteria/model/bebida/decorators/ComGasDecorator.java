@@ -1,4 +1,4 @@
-package com.projetocafeteria.model.bebida.decorator;
+package com.projetocafeteria.model.bebida.decorators;
 import com.projetocafeteria.model.bebida.Bebida;
 
 public class ComGasDecorator extends BebidaDecorator {

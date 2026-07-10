@@ -1,10 +1,10 @@
-package com.projetocafeteria.model.bebida.builder;
+package com.projetocafeteria.model.bebida.builders;
 
 import java.util.Scanner;
 
 import com.projetocafeteria.model.bebida.Bebida;
 import com.projetocafeteria.model.bebida.Cafe;
-import com.projetocafeteria.model.bebida.decorator.LeiteDecorator;
+import com.projetocafeteria.model.bebida.decorators.LeiteDecorator;
 
 public class CafeBuilder implements BebidaBuilder {
     private Bebida cafe;

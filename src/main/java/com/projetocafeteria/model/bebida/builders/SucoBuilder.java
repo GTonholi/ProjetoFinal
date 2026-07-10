@@ -1,11 +1,11 @@
-package com.projetocafeteria.model.bebida.builder;
+package com.projetocafeteria.model.bebida.builders;
 
 import java.util.Scanner;
 
 import com.projetocafeteria.model.bebida.Bebida;
 import com.projetocafeteria.model.bebida.Suco;
-import com.projetocafeteria.model.bebida.decorator.AcucarDecorator;
-import com.projetocafeteria.model.bebida.decorator.SaborSucoDecorator;
+import com.projetocafeteria.model.bebida.decorators.AcucarDecorator;
+import com.projetocafeteria.model.bebida.decorators.SaborSucoDecorator;
 
 public class SucoBuilder implements BebidaBuilder {
     private Bebida suco;

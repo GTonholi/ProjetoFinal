@@ -8,7 +8,6 @@ import com.projetocafeteria.model.Cardapio;
 import com.projetocafeteria.model.Cliente;
 import com.projetocafeteria.model.Pedido;
 import com.projetocafeteria.model.bebida.Bebida;
-import com.projetocafeteria.model.comida.Cobertura;
 import com.projetocafeteria.model.comida.Comida;
 import com.projetocafeteria.model.pagamento.CartaoCredito;
 import com.projetocafeteria.model.pagamento.CartaoDebito;
@@ -61,7 +60,7 @@ public class PedidoService {
     }
 
     private void adicionarComida(Pedido pedido) {
-        List<Supplier<Comida>> disponiveis = cardapio.getComidasDisponiveis();
+        List<Supplier<com.projetocafeteria.model.comida.builders.ComidaBuilder>> disponiveis = cardapio.getComidasDisponiveis();
 
         if (disponiveis.isEmpty()) {
             System.out.println("Nenhuma comida disponível no cardápio.");
@@ -70,25 +69,24 @@ public class PedidoService {
 
         System.out.println("Escolha a comida:");
         for (int i = 0; i < disponiveis.size(); i++) {
-            Comida item = disponiveis.get(i).get();
-            System.out.printf("["+ (i+1) +"] "+ item.exibirDescricao() +" - R$ %.2f%n", item.getValor());
+            com.projetocafeteria.model.comida.builders.ComidaBuilder builderInicial = disponiveis.get(i).get();
+            Comida itemBase = builderInicial.construir();
+            System.out.printf("["+ (i+1) +"] "+ itemBase.exibirDescricao() +" - R$ %.2f%n", itemBase.getValor());
         }
 
         int indice = lerOpcaoNumerica(disponiveis.size());
-        Comida comida = disponiveis.get(indice - 1).get();
+        com.projetocafeteria.model.comida.builders.ComidaBuilder builderEscolhido = disponiveis.get(indice - 1).get();
 
-        System.out.print("Adicionar cobertura? (s/n): ");
-        if (sc.nextLine().trim().equalsIgnoreCase("s")) {
-            comida = new Cobertura(comida);
-        }
+        Comida comida = builderEscolhido.interagirComUsuario(sc).construir();
 
         int quantidade = lerQuantidade();
         pedido.getCarrinho().AdicionarComida(comida, quantidade);
         System.out.println("Adicionado: " + comida.exibirDescricao() + " x" + quantidade);
     }
 
+
     private void adicionarBebida(Pedido pedido) {
-        List<java.util.function.Supplier<com.projetocafeteria.model.bebida.builder.BebidaBuilder>> disponiveis = cardapio.getBebidasDisponiveis();
+        List<java.util.function.Supplier<com.projetocafeteria.model.bebida.builders.BebidaBuilder>> disponiveis = cardapio.getBebidasDisponiveis();
 
         if (disponiveis.isEmpty()) {
             System.out.println("Nenhuma bebida disponível no cardápio.");
@@ -97,14 +95,14 @@ public class PedidoService {
 
         System.out.println("Escolha a bebida:");
         for (int i = 0; i < disponiveis.size(); i++) {
-            com.projetocafeteria.model.bebida.builder.BebidaBuilder builderInicial = disponiveis.get(i).get();
+            com.projetocafeteria.model.bebida.builders.BebidaBuilder builderInicial = disponiveis.get(i).get();
             Bebida itemBase = builderInicial.construir();
             System.out.printf("["+ (i+1) +"] "+ itemBase.exibirDescricao() +" - R$ %.2f%n", itemBase.getValor());
         }
 
         int indice = lerOpcaoNumerica(disponiveis.size());
         
-        com.projetocafeteria.model.bebida.builder.BebidaBuilder builderEscolhido = disponiveis.get(indice - 1).get();
+        com.projetocafeteria.model.bebida.builders.BebidaBuilder builderEscolhido = disponiveis.get(indice - 1).get();
         
         Bebida bebida = builderEscolhido.interagirComUsuario(sc).construir();
 
