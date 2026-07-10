@@ -40,18 +40,39 @@ public class PedidoService{
             System.out.println("\n[1] Adicionar comida");
             System.out.println("[2] Adicionar bebida");
             System.out.println("[3] Finalizar pedido");
+            System.out.println("[4] Cancelar Pedido");
             System.out.print("Opção: ");
 
             String opcao = sc.nextLine().trim();
-            switch (opcao) {
-                case "1" -> adicionarComida(pedido);
-                case "2" -> adicionarBebida(pedido);
-                case "3" -> continuar = false;
-                default -> System.out.println("Opção inválida!");
+            try {
+                switch (opcao) {
+                    case "1" -> adicionarComida(pedido);
+                    case "2" -> adicionarBebida(pedido);
+                    case "3" -> {
+                        if (pedido.getCarrinho().estaVazio()) {
+                            System.out.println("Seu carrinho está vazio! Adicione itens antes de pagar.");
+                        } else {
+                            continuar = false;
+                        }
+                    }
+                    case "4" -> {
+                        pedido.cancelarPedido();
+                        return;
+                    }
+                    default -> System.out.println("Opção inválida! Escolha de 1 a 4.");
+                }
+            } catch (ItemNaoEncontradoException e) {
+                System.out.println("\n[OPÇÃO INVÁLIDA] " + e.getMessage());
             }
         }
 
         escolherMetodoPagamento(pedido);
+        
+        if (pedido.estaCancelado()) {
+            System.out.println("Pedido cancelado. Voltando ao menu inicial...");
+            return;
+        }
+
         boolean pago = pedido.realizarPagamento();
         
         if(pago){
@@ -178,13 +199,23 @@ public class PedidoService{
                 new Dinheiro(), new Pix(), new CartaoCredito(), new CartaoDebito()
         );
 
-        System.out.println("Escolha o método de pagamento:");
+        System.out.println("\nTotal do seu pedido: R$ " + String.format("%.2f", pedido.calcularTotal()));
+        
+        System.out.println(" ATENÇÃO: Após o pagamento, o pedido não poderá mais ser cancelado!");
+        
+        System.out.println("\nEscolha o método de pagamento:");
         for (int i = 0; i < opcoes.size(); i++) {
-            System.out.printf("["+ (i+1) +"] %s%n", opcoes.get(i).getDescricao());
+            System.out.printf("[%d] %s%n", (i + 1), opcoes.get(i).getDescricao());
         }
+        System.out.printf("[%d] Desistir e Cancelar Pedido%n", (opcoes.size() + 1));
 
-        int escolha = lerOpcaoNumerica(opcoes.size());
-        pedido.definirMetodoPagamento(opcoes.get(escolha - 1));
+        int escolha = lerOpcaoNumerica(opcoes.size() + 1);
+
+        if (escolha == opcoes.size() + 1) {
+            pedido.cancelarPedido();
+        } else {
+            pedido.definirMetodoPagamento(opcoes.get(escolha - 1));
+        }
     }
 
     public void mostrarCardapioInformativo() {
