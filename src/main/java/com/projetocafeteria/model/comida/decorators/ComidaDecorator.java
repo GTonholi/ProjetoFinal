@@ -1,4 +1,6 @@
-package com.projetocafeteria.model.comida;
+package com.projetocafeteria.model.comida.decorators;
+
+import com.projetocafeteria.model.comida.Comida;
 
 public abstract class ComidaDecorator implements Comida{
     protected Comida comidaDecorada;

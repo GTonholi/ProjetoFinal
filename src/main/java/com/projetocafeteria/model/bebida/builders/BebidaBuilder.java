@@ -1,4 +1,4 @@
-package com.projetocafeteria.model.bebida.builder;
+package com.projetocafeteria.model.bebida.builders;
 
 import java.util.Scanner;
 
