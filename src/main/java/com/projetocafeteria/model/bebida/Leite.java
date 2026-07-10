@@ -1,5 +1,7 @@
 package com.projetocafeteria.model.bebida;
 
+import com.projetocafeteria.model.bebida.decorator.BebidaDecorator;
+
 public class Leite extends BebidaDecorator{
     public Leite(Bebida b){
         super(b);
