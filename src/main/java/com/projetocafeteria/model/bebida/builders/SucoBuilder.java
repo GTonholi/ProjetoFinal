@@ -1,6 +1,9 @@
 package com.projetocafeteria.model.bebida.builders;
 
+import java.util.List;
 import java.util.Scanner;
+
+import com.projetocafeteria.model.ItemCardapioInfo;
 import com.projetocafeteria.model.bebida.Bebida;
 import com.projetocafeteria.model.bebida.Suco;
 import com.projetocafeteria.model.bebida.decorators.AcucarDecorator;
@@ -51,5 +54,17 @@ public class SucoBuilder implements BebidaBuilder {
     @Override
     public Bebida construir() {
         return this.suco;
+    }
+
+    @Override
+    public ItemCardapioInfo obterInformacaoComercial() {
+        Bebida base = new com.projetocafeteria.model.bebida.Suco();
+        
+        return new ItemCardapioInfo(
+            base.exibirDescricao(),
+            base.getValor(),
+            List.of("Laranja", "Abacaxi", "Morango", "Uva"),
+            List.of("Com Açucar")
+        );
     }
 }

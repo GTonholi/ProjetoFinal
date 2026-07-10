@@ -33,10 +33,10 @@ public class MenuCliente {
             try {
                 System.out.print("Opção: ");
                 int opcao = Integer.parseInt(sc.nextLine().trim());
-                if (opcao == 1 || opcao == 2) {
+                if (opcao >= 1 && opcao <= 3) {
                     return opcao;
                 }
-                System.out.println("Opção inválida! Digite 1 ou 2.");
+                System.out.println("Opção inválida! Digite um número entre 1 e 3.");
             } catch (NumberFormatException e) {
                 System.out.println("Entrada inválida! Digite um número.");
             }
@@ -46,15 +46,17 @@ public class MenuCliente {
     private static void exibirMenu() {
         System.out.println("\n        BEM-VINDO À CAFETERIA         \n");
         System.out.println("Em que podemos ajudar?\n");
-        System.out.println("[1] Realizar pedido");
-        System.out.println("[2] Ver Painel de Pedidos");
+        System.out.println("[1] Ver Cardápio");
+        System.out.println("[2] Realizar pedido");
+        System.out.println("[3] Ver Painel de Pedidos");
     }
 
     private static void processarEscolha(int escolha, PedidoService pedidoService, PainelPedidos painelPedidos) {
         switch (escolha) {
-            case 1 -> pedidoService.realizarPedido(painelPedidos);
-            case 2 -> painelPedidos.exibir();
-            default -> throw new ItemNaoEncontradoException("A opção de menu " + escolha + " não é reconhecida pelo sistema.");
+            case 1 -> pedidoService.mostrarCardapioInformativo();
+            case 2 -> pedidoService.realizarPedido(painelPedidos);
+            case 3 -> painelPedidos.exibir();
+            default -> throw new ItemNaoEncontradoException("Opção inválida: " + escolha);
         }
     }
 }

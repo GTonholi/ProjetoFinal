@@ -1,8 +1,10 @@
 package com.projetocafeteria.model.comida.builders;
 
+import java.util.List;
 import java.util.Scanner;
 
 import com.projetocafeteria.exception.ItemNaoEncontradoException;
+import com.projetocafeteria.model.ItemCardapioInfo;
 import com.projetocafeteria.model.comida.Comida;
 import com.projetocafeteria.model.comida.PaoDeQueijo;
 import com.projetocafeteria.model.comida.decorators.RecheioPaoDeQueijoDecorator;
@@ -34,5 +36,17 @@ public class PaoDeQueijoBuilder implements ComidaBuilder {
     @Override
     public Comida construir() {
         return this.paoDeQueijo;
+    }
+
+    @Override
+    public ItemCardapioInfo obterInformacaoComercial() {
+        Comida base = new com.projetocafeteria.model.comida.PaoDeQueijo();
+        
+        return new ItemCardapioInfo(
+            base.exibirDescricao(),
+            base.getValor(),
+            List.of(),
+            List.of("Recheado com Requeijão (+R$ 2,50)")
+        );
     }
 }

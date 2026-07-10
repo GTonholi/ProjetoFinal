@@ -18,6 +18,7 @@ import com.projetocafeteria.model.pagamento.Dinheiro;
 import com.projetocafeteria.model.pagamento.MetodoPagamento;
 import com.projetocafeteria.model.pagamento.Pix;
 import com.projetocafeteria.view.PainelPedidos;
+import com.projetocafeteria.view.VisualizadorCardapio;
 
 public class PedidoService{       
     private final Scanner sc;
@@ -184,6 +185,11 @@ public class PedidoService{
 
         int escolha = lerOpcaoNumerica(opcoes.size());
         pedido.definirMetodoPagamento(opcoes.get(escolha - 1));
+    }
+
+    public void mostrarCardapioInformativo() {
+        GeradorCardapioInformativo gerador = new GeradorCardapioInformativo(this.cardapio);
+        VisualizadorCardapio.exibir(gerador);
     }
 }
 

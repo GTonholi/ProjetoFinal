@@ -1,17 +1,19 @@
 package com.projetocafeteria.model.bebida.builders;
 
+import java.util.List;
 import java.util.Scanner;
 
 import com.projetocafeteria.model.bebida.Bebida;
 import com.projetocafeteria.model.bebida.decorators.ComGasDecorator;
 import com.projetocafeteria.exception.ItemNaoEncontradoException;
+import com.projetocafeteria.model.ItemCardapioInfo;
 import com.projetocafeteria.model.bebida.Agua;;
 
 public class AguaBuilder implements BebidaBuilder {
     private Bebida agua;
 
     public AguaBuilder() {
-        this.agua = new Agua(); // Começa com a água comum
+        this.agua = new Agua();
     }
 
     @Override
@@ -23,7 +25,7 @@ public class AguaBuilder implements BebidaBuilder {
         
         int opcaoGas = scanner.nextInt();
         scanner.nextLine();
-        
+
         if (opcaoGas != 1 && opcaoGas != 2) {
             throw new ItemNaoEncontradoException("Opção inválida (" + opcaoGas + ") para o tipo de água.");
         }
@@ -38,5 +40,17 @@ public class AguaBuilder implements BebidaBuilder {
     @Override
     public Bebida construir() {
         return this.agua;
+    }
+
+    @Override
+    public ItemCardapioInfo obterInformacaoComercial() {
+        Bebida base = new com.projetocafeteria.model.bebida.Agua();
+        
+        return new ItemCardapioInfo(
+            base.exibirDescricao(),
+            base.getValor(),
+            List.of("Sem Gás", "Com Gás"),
+            List.of()
+        );
     }
 }
