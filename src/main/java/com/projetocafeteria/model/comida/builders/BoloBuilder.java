@@ -1,8 +1,10 @@
 package com.projetocafeteria.model.comida.builders;
 
+import java.util.List;
 import java.util.Scanner;
 
 import com.projetocafeteria.exception.ItemNaoEncontradoException;
+import com.projetocafeteria.model.ItemCardapioInfo;
 import com.projetocafeteria.model.comida.Bolo;
 import com.projetocafeteria.model.comida.Comida;
 import com.projetocafeteria.model.comida.decorators.CoberturaDecorator;
@@ -22,7 +24,7 @@ public class BoloBuilder implements ComidaBuilder {
         System.out.print("Opção: ");
         int opcaoSabor = scanner.nextInt();
         scanner.nextLine();
-        
+
         String sabor = switch (opcaoSabor) {
             case 1 -> "Chocolate";
             case 2 -> "Laranja";
@@ -49,5 +51,17 @@ public class BoloBuilder implements ComidaBuilder {
     @Override
     public Comida construir() {
         return this.bolo;
+    }
+
+    @Override
+    public ItemCardapioInfo obterInformacaoComercial() {
+        Comida base = new com.projetocafeteria.model.comida.Bolo();
+        
+        return new ItemCardapioInfo(
+            base.exibirDescricao(),
+            base.getValor(),
+            List.of("Chocolate", "Laranja", "Formigueiro"),
+            List.of("Cobertura (+R$ 3,00)")
+        );
     }
 }
