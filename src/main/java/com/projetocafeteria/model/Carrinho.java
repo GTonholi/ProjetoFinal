@@ -33,4 +33,8 @@ public class Carrinho {
 
         return totalComida + totalBebida;
     }
+
+    public boolean estaVazio() {
+        return comidas.isEmpty() && bebidas.isEmpty();
+    }
 }
