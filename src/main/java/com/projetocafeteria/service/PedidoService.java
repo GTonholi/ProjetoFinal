@@ -4,10 +4,13 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.function.Supplier;
 
+import com.projetocafeteria.exception.ItemNaoEncontradoException;
+import com.projetocafeteria.exception.QuantidadeInvalidaException;
 import com.projetocafeteria.model.Cardapio;
 import com.projetocafeteria.model.Cliente;
 import com.projetocafeteria.model.Pedido;
 import com.projetocafeteria.model.bebida.Bebida;
+import com.projetocafeteria.model.bebida.builders.BebidaBuilder;
 import com.projetocafeteria.model.comida.Comida;
 import com.projetocafeteria.model.pagamento.CartaoCredito;
 import com.projetocafeteria.model.pagamento.CartaoDebito;
@@ -16,7 +19,7 @@ import com.projetocafeteria.model.pagamento.MetodoPagamento;
 import com.projetocafeteria.model.pagamento.Pix;
 import com.projetocafeteria.view.PainelPedidos;
 
-public class PedidoService {
+public class PedidoService{       
     private final Scanner sc;
     private final Cardapio cardapio;
 
@@ -75,13 +78,28 @@ public class PedidoService {
         }
 
         int indice = lerOpcaoNumerica(disponiveis.size());
+        
+        if (indice < 1 || indice > disponiveis.size()) {
+            throw new ItemNaoEncontradoException("Erro Crítico: O índice " + indice + " não corresponde a nenhuma comida mapeada no cardápio.");
+        }
+        
         com.projetocafeteria.model.comida.builders.ComidaBuilder builderEscolhido = disponiveis.get(indice - 1).get();
 
-        Comida comida = builderEscolhido.interagirComUsuario(sc).construir();
-
-        int quantidade = lerQuantidade();
-        pedido.getCarrinho().AdicionarComida(comida, quantidade);
-        System.out.println("Adicionado: " + comida.exibirDescricao() + " x" + quantidade);
+        try {
+            Comida comida = builderEscolhido.interagirComUsuario(sc).construir();
+            
+            int quantidade = lerQuantidade();
+            
+            pedido.getCarrinho().AdicionarComida(comida, quantidade);
+            System.out.println("Adicionado: " + comida.exibirDescricao() + " x" + quantidade);
+            
+        } catch (QuantidadeInvalidaException e) {
+            System.out.println("\n[ERRO DE NEGÓCIO] " + e.getMessage());
+            System.out.println("Operação cancelada. O item não foi adicionado ao carrinho.");
+        } catch (ItemNaoEncontradoException e) { // <-- ESSE CATCH VAI SEGURAR O SEU ERRO!
+            System.out.println("\n[OPÇÃO INVÁLIDA] " + e.getMessage());
+            System.out.println("Operação cancelada. Voltando ao menu de escolhas...");
+        }
     }
 
 
@@ -101,14 +119,28 @@ public class PedidoService {
         }
 
         int indice = lerOpcaoNumerica(disponiveis.size());
-        
-        com.projetocafeteria.model.bebida.builders.BebidaBuilder builderEscolhido = disponiveis.get(indice - 1).get();
-        
-        Bebida bebida = builderEscolhido.interagirComUsuario(sc).construir();
+    
+        if (indice < 1 || indice > disponiveis.size()) {
+            throw new ItemNaoEncontradoException("Erro Crítico: O índice " + indice + " não corresponde a nenhuma bebida mapeada no cardápio.");
+        }
 
-        int quantidade = lerQuantidade();
-        pedido.getCarrinho().AdicionarBebida(bebida, quantidade);
-        System.out.println("Adicionado: " + bebida.exibirDescricao() + " x" + quantidade);
+        BebidaBuilder builderEscolhido = disponiveis.get(indice - 1).get();
+
+        try {
+            Bebida bebida = builderEscolhido.interagirComUsuario(sc).construir();
+            
+            int quantidade = lerQuantidade();
+            
+            pedido.getCarrinho().AdicionarBebida(bebida, quantidade);
+            System.out.println("Adicionado: " + bebida.exibirDescricao() + " x" + quantidade);
+            
+        } catch (QuantidadeInvalidaException e) {
+            System.out.println("\n[ERRO DE NEGÓCIO] " + e.getMessage());
+            System.out.println("Operação cancelada. O item não foi adicionado ao carrinho.");
+        } catch (ItemNaoEncontradoException e) { 
+            System.out.println("\n[OPÇÃO INVÁLIDA] " + e.getMessage());
+            System.out.println("Operação cancelada. Voltando ao menu de escolhas...");
+        }
     }
 
     private int lerOpcaoNumerica(int max) {
@@ -126,18 +158,17 @@ public class PedidoService {
         }
     }
 
-    private int lerQuantidade() {
-        while (true) {
-            try {
-                System.out.print("Quantidade: ");
-                int valor = Integer.parseInt(sc.nextLine().trim());
-                if (valor > 0) {
-                    return valor;
-                }
-                System.out.println("A quantidade deve ser maior que zero.");
-            } catch (NumberFormatException e) {
-                System.out.println("Digite um número válido.");
+    private int lerQuantidade() throws QuantidadeInvalidaException {
+        try {
+            System.out.print("Quantidade: ");
+            int valor = Integer.parseInt(sc.nextLine().trim());
+            
+            if (valor <= 0) {
+                throw new QuantidadeInvalidaException("A quantidade solicitada (" + valor + ") é inválida. Deve ser maior que zero.");
             }
+            return valor;
+        } catch (NumberFormatException e) {
+            throw new QuantidadeInvalidaException("O valor digitado para a quantidade não é um número válido.");
         }
     }
 
@@ -154,5 +185,5 @@ public class PedidoService {
         int escolha = lerOpcaoNumerica(opcoes.size());
         pedido.definirMetodoPagamento(opcoes.get(escolha - 1));
     }
-
 }
+

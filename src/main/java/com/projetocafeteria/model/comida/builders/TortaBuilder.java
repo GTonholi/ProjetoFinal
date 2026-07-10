@@ -2,6 +2,7 @@ package com.projetocafeteria.model.comida.builders;
 
 import java.util.Scanner;
 import com.projetocafeteria.model.comida.Torta;
+import com.projetocafeteria.exception.ItemNaoEncontradoException;
 import com.projetocafeteria.model.comida.Comida;
 import com.projetocafeteria.model.comida.decorators.SaborTortaDecorator;
 
@@ -20,12 +21,12 @@ public class TortaBuilder implements ComidaBuilder {
         int opcao = scanner.nextInt();
         scanner.nextLine();
 
-        String sabor = "Tradicional";
-        switch (opcao) {
-            case 1 -> sabor = "Frango";
-            case 2 -> sabor = "Palmito";
-            case 3 -> sabor = "Maçã";
-        }
+        String sabor = switch (opcao) {
+            case 1 -> "Frango";
+            case 2 -> "Palmito";
+            case 3 -> "Maçã";
+            default -> throw new ItemNaoEncontradoException("O sabor de número " + opcao + " não existe.");
+        };
         this.torta = new SaborTortaDecorator(this.torta, sabor);
         return this;
     }

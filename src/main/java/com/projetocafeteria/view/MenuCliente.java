@@ -2,6 +2,7 @@ package com.projetocafeteria.view;
 
 import java.util.Scanner;
 
+import com.projetocafeteria.exception.ItemNaoEncontradoException;
 import com.projetocafeteria.service.PedidoService;
 
 public class MenuCliente {
@@ -11,11 +12,20 @@ public class MenuCliente {
         this.sc = sc;
     }
     
-    public void run(PedidoService pedidoService, PainelPedidos painelPedidos){
-        int escolha = selecionarOpcao(sc);
-        processarEscolha(escolha, pedidoService, painelPedidos);
+    public void run(PedidoService pedidoService, PainelPedidos painelPedidos) {
+        boolean rodando = true;
+        
+        while (rodando) {
+            try {
+                int escolha = selecionarOpcao(sc);
+                
+                processarEscolha(escolha, pedidoService, painelPedidos);
+                
+            } catch (ItemNaoEncontradoException e) {
+                System.out.println("\n[ERRO DE NAVEGAÇÃO] " + e.getMessage());
+            }
+        }
     }
-    
     private static int selecionarOpcao(Scanner sc) {
         exibirMenu();
         
@@ -44,8 +54,7 @@ public class MenuCliente {
         switch (escolha) {
             case 1 -> pedidoService.realizarPedido(painelPedidos);
             case 2 -> painelPedidos.exibir();
-            default -> { System.out.println("Opção Inválida!");
-            }
+            default -> throw new ItemNaoEncontradoException("A opção de menu " + escolha + " não é reconhecida pelo sistema.");
         }
     }
 }
