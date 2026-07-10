@@ -1,6 +1,8 @@
 package com.projetocafeteria.model.comida.builders;
 
 import java.util.Scanner;
+
+import com.projetocafeteria.exception.ItemNaoEncontradoException;
 import com.projetocafeteria.model.comida.Comida;
 import com.projetocafeteria.model.comida.PaoDeQueijo;
 import com.projetocafeteria.model.comida.decorators.RecheioPaoDeQueijoDecorator;
@@ -18,6 +20,10 @@ public class PaoDeQueijoBuilder implements ComidaBuilder {
         System.out.print("Opção: ");
         int opcao = scanner.nextInt();
         scanner.nextLine();
+
+        if (opcao != 1 && opcao != 2) {
+            throw new ItemNaoEncontradoException("Opção inválida (" + opcao + ") para o adicional de Requeijão.");
+        }
 
         if (opcao == 1) {
             this.paoDeQueijo = new RecheioPaoDeQueijoDecorator(this.paoDeQueijo);

@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import com.projetocafeteria.model.bebida.Bebida;
 import com.projetocafeteria.model.bebida.decorators.ComGasDecorator;
+import com.projetocafeteria.exception.ItemNaoEncontradoException;
 import com.projetocafeteria.model.bebida.Agua;;
 
 public class AguaBuilder implements BebidaBuilder {
@@ -21,6 +22,12 @@ public class AguaBuilder implements BebidaBuilder {
         System.out.print("Opção: ");
         
         int opcaoGas = scanner.nextInt();
+        scanner.nextLine();
+        
+        if (opcaoGas != 1 && opcaoGas != 2) {
+            throw new ItemNaoEncontradoException("Opção inválida (" + opcaoGas + ") para o tipo de água.");
+        }
+
         if (opcaoGas == 2) {
             this.agua = new ComGasDecorator(this.agua);
         }

@@ -2,6 +2,7 @@ package com.projetocafeteria.model.bebida.builders;
 
 import java.util.Scanner;
 
+import com.projetocafeteria.exception.ItemNaoEncontradoException;
 import com.projetocafeteria.model.bebida.Bebida;
 import com.projetocafeteria.model.bebida.Cafe;
 import com.projetocafeteria.model.bebida.decorators.LeiteDecorator;
@@ -17,6 +18,12 @@ public class CafeBuilder implements BebidaBuilder {
     public BebidaBuilder interagirComUsuario(Scanner scanner) {
         System.out.println("Deseja adicionar leite? +R$ 1.5  (1 - Sim / 2 - Não)");
         int querLeite = scanner.nextInt();
+        scanner.nextLine();
+        
+        if (querLeite != 1 && querLeite != 2) {
+            throw new ItemNaoEncontradoException("Opção inválida (" + querLeite + ") para o adicional de leite.");
+        }
+
         if (querLeite == 1) {
             this.cafe = new LeiteDecorator(this.cafe);
         }

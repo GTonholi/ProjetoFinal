@@ -1,6 +1,8 @@
 package com.projetocafeteria.model.comida.builders;
 
 import java.util.Scanner;
+
+import com.projetocafeteria.exception.ItemNaoEncontradoException;
 import com.projetocafeteria.model.comida.Bolo;
 import com.projetocafeteria.model.comida.Comida;
 import com.projetocafeteria.model.comida.decorators.CoberturaDecorator;
@@ -21,17 +23,22 @@ public class BoloBuilder implements ComidaBuilder {
         int opcaoSabor = scanner.nextInt();
         scanner.nextLine();
         
-        String sabor = "Simples";
-        switch (opcaoSabor) {
-            case 1 -> sabor = "Chocolate";
-            case 2 -> sabor = "Laranja";
-            case 3 -> sabor = "Formigueiro";
-        }
+        String sabor = switch (opcaoSabor) {
+            case 1 -> "Chocolate";
+            case 2 -> "Laranja";
+            case 3 -> "Formigueiro";
+            default -> throw new ItemNaoEncontradoException("O sabor de número " + opcaoSabor + " não existe.");
+        };
         this.bolo = new SaborBoloDecorator(this.bolo, sabor);
 
         System.out.print("Deseja adicionar cobertura? +R$3.0 (1 - Sim / 2 - Não): ");
         int querCobertura = scanner.nextInt();
         scanner.nextLine();
+
+        if (querCobertura != 1 && querCobertura != 2) {
+            throw new ItemNaoEncontradoException("Opção inválida (" + querCobertura + ") para a cobertura.");
+        }
+
         if (querCobertura == 1) {
             this.bolo = new CoberturaDecorator(this.bolo);
         }

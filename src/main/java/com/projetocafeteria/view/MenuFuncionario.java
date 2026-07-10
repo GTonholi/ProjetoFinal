@@ -3,6 +3,7 @@ package com.projetocafeteria.view;
 import java.util.List;
 import java.util.Scanner;
 
+import com.projetocafeteria.exception.ItemNaoEncontradoException;
 import com.projetocafeteria.model.Pedido;
 import com.projetocafeteria.service.LoginService;
 
@@ -25,8 +26,24 @@ public class MenuFuncionario {
             return;
         }
 
-        int escolha = selecionarOpcao();
-        processarEscolha(escolha, painelPedidos);
+        boolean logado = true;
+        while (logado && loginService.isUsuarioLogado()) {
+            try {
+                int escolha = selecionarOpcao();
+                
+                if (escolha == 2) {
+                    loginService.deslogar();
+                    logado = false;
+                    System.out.println("Logout efetuado com sucesso.");
+                } else {
+                    processarEscolha(escolha, painelPedidos);
+                }
+                
+            } catch (ItemNaoEncontradoException e) {
+                System.out.println("\n[ERRO DE SISTEMA] " + e.getMessage());
+                System.out.println("Retornando ao menu do funcionário...");
+            }
+        }
     }
     
     private int selecionarOpcao() {
@@ -56,9 +73,7 @@ public class MenuFuncionario {
     private void processarEscolha(int escolha, PainelPedidos painelPedidos) {
         switch (escolha) {
             case 1 -> atualizarEstadoPedido(painelPedidos);
-            case 2 -> loginService.deslogar();
-            default -> { System.out.println("Opção Inválida!");
-            }
+            default -> throw new ItemNaoEncontradoException("A opção de menu " + escolha + " não existe.");
         }
     }
 
@@ -81,8 +96,7 @@ public class MenuFuncionario {
         Pedido pedido = painelPedidos.buscarPorId(id);
 
         if (pedido == null) {
-            System.out.println("Pedido não encontrado.");
-            return;
+            throw new ItemNaoEncontradoException("O pedido com o ID #" + id + " não foi localizado no painel.");
         }
 
         if (pedido.pedidoEstaEntregue()) {

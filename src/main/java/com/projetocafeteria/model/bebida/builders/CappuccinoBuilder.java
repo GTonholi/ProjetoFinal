@@ -1,6 +1,8 @@
 package com.projetocafeteria.model.bebida.builders;
 
 import java.util.Scanner;
+
+import com.projetocafeteria.exception.ItemNaoEncontradoException;
 import com.projetocafeteria.model.bebida.Bebida;
 import com.projetocafeteria.model.bebida.Cappuccino;
 import com.projetocafeteria.model.bebida.decorators.AdicionalCappuccinoDecorator;
@@ -20,10 +22,11 @@ public class CappuccinoBuilder implements BebidaBuilder {
         int opcao = scanner.nextInt();
         scanner.nextLine();
 
-        if (opcao == 2) {
-            this.cappuccino = new AdicionalCappuccinoDecorator(this.cappuccino, "Canela");
-        } else if (opcao == 3) {
-            this.cappuccino = new AdicionalCappuccinoDecorator(this.cappuccino, "Chocolate em Pó");
+        switch (opcao) {
+            case 1 -> {}
+            case 2 -> this.cappuccino = new AdicionalCappuccinoDecorator(this.cappuccino, "Canela");
+            case 3 -> this.cappuccino = new AdicionalCappuccinoDecorator(this.cappuccino, "Chocolate em Pó");
+            default -> throw new ItemNaoEncontradoException("Opção inválida (" + opcao + ") para o adicional do Cappuccino.");
         }
         return this;
     }
