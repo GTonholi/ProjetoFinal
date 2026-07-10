@@ -1,4 +1,6 @@
-package com.projetocafeteria.model.bebida;
+package com.projetocafeteria.model.bebida.decorator;
+
+import com.projetocafeteria.model.bebida.Bebida;
 
 public abstract class BebidaDecorator implements Bebida{
     protected Bebida bebidaDecorada;

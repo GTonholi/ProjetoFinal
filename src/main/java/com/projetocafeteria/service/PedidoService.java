@@ -8,7 +8,6 @@ import com.projetocafeteria.model.Cardapio;
 import com.projetocafeteria.model.Cliente;
 import com.projetocafeteria.model.Pedido;
 import com.projetocafeteria.model.bebida.Bebida;
-import com.projetocafeteria.model.bebida.Leite;
 import com.projetocafeteria.model.comida.Cobertura;
 import com.projetocafeteria.model.comida.Comida;
 import com.projetocafeteria.model.pagamento.CartaoCredito;
@@ -89,7 +88,7 @@ public class PedidoService {
     }
 
     private void adicionarBebida(Pedido pedido) {
-        List<Supplier<Bebida>> disponiveis = cardapio.getBebidasDisponiveis();
+        List<java.util.function.Supplier<com.projetocafeteria.model.bebida.builder.BebidaBuilder>> disponiveis = cardapio.getBebidasDisponiveis();
 
         if (disponiveis.isEmpty()) {
             System.out.println("Nenhuma bebida disponível no cardápio.");
@@ -98,17 +97,16 @@ public class PedidoService {
 
         System.out.println("Escolha a bebida:");
         for (int i = 0; i < disponiveis.size(); i++) {
-            Bebida item = disponiveis.get(i).get();
-            System.out.printf("["+ (i+1) +"] "+ item.exibirDescricao() +" - R$ %.2f%n", item.getValor());
+            com.projetocafeteria.model.bebida.builder.BebidaBuilder builderInicial = disponiveis.get(i).get();
+            Bebida itemBase = builderInicial.construir();
+            System.out.printf("["+ (i+1) +"] "+ itemBase.exibirDescricao() +" - R$ %.2f%n", itemBase.getValor());
         }
 
         int indice = lerOpcaoNumerica(disponiveis.size());
-        Bebida bebida = disponiveis.get(indice - 1).get();
-
-        System.out.print("Adicionar leite? (s/n): ");
-        if (sc.nextLine().trim().equalsIgnoreCase("s")) {
-            bebida = new Leite(bebida);
-        }
+        
+        com.projetocafeteria.model.bebida.builder.BebidaBuilder builderEscolhido = disponiveis.get(indice - 1).get();
+        
+        Bebida bebida = builderEscolhido.interagirComUsuario(sc).construir();
 
         int quantidade = lerQuantidade();
         pedido.getCarrinho().AdicionarBebida(bebida, quantidade);

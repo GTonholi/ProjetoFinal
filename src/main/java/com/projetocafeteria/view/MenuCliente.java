@@ -34,7 +34,8 @@ public class MenuCliente {
     }
 
     private static void exibirMenu() {
-        System.out.println("Bem vindo! No que podemos ajudar?");
+        System.out.println("\n        BEM-VINDO À CAFETERIA         \n");
+        System.out.println("Em que podemos ajudar?\n");
         System.out.println("[1] Realizar pedido");
         System.out.println("[2] Ver Painel de Pedidos");
     }
