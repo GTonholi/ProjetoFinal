@@ -19,7 +19,7 @@ public class MenuCliente {
             try {
                 int escolha = selecionarOpcao(sc);
                 
-                processarEscolha(escolha, pedidoService, painelPedidos);
+                rodando = processarEscolha(escolha, pedidoService, painelPedidos);
                 
             } catch (ItemNaoEncontradoException e) {
                 System.out.println("\n[ERRO DE NAVEGAÇÃO] " + e.getMessage());
@@ -33,10 +33,10 @@ public class MenuCliente {
             try {
                 System.out.print("Opção: ");
                 int opcao = Integer.parseInt(sc.nextLine().trim());
-                if (opcao >= 1 && opcao <= 3) {
+                if (opcao >= 0 && opcao <= 3) {
                     return opcao;
                 }
-                System.out.println("Opção inválida! Digite um número entre 1 e 3.");
+                System.out.println("Opção inválida! Digite um número entre 0 e 3.");
             } catch (NumberFormatException e) {
                 System.out.println("Entrada inválida! Digite um número.");
             }
@@ -49,14 +49,18 @@ public class MenuCliente {
         System.out.println("[1] Ver Cardápio");
         System.out.println("[2] Realizar pedido");
         System.out.println("[3] Ver Painel de Pedidos");
+        System.out.println("[0] Voltar");
     }
 
-    private static void processarEscolha(int escolha, PedidoService pedidoService, PainelPedidos painelPedidos) {
+    private static boolean processarEscolha(int escolha, PedidoService pedidoService, PainelPedidos painelPedidos) {
         switch (escolha) {
             case 1 -> pedidoService.mostrarCardapioInformativo();
             case 2 -> pedidoService.realizarPedido(painelPedidos);
             case 3 -> painelPedidos.exibir();
+            case 0 -> {System.out.println("\nvoltando a tela inicial...\n"); return false;}
             default -> throw new ItemNaoEncontradoException("Opção inválida: " + escolha);
         }
+
+        return true;
     }
 }

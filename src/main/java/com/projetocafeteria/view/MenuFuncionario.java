@@ -34,7 +34,7 @@ public class MenuFuncionario {
                 if (escolha == 2) {
                     loginService.deslogar();
                     logado = false;
-                    System.out.println("Logout efetuado com sucesso.");
+                    System.out.println("\nLogout efetuado com sucesso.");
                 } else {
                     processarEscolha(escolha, painelPedidos);
                 }
@@ -65,6 +65,7 @@ public class MenuFuncionario {
 
     private void exibirMenu() {
         String nome = loginService.getNomeFuncionarioLogado();
+        System.out.println("\n-----------------------------------------------");
         System.out.println("Bem vindo, " + nome + ". No que podemos ajudar?");
         System.out.println("[1] Atualizar estado do Pedido");
         System.out.println("[2] Deslogar do sistema");
