@@ -53,7 +53,7 @@ public class PedidoService {
         ComidaBuilder builder = disponiveis.get(indiceBuilder).get();
         Comida comida = builder.comSubopcao(subopcao).comAdicional(adicional).construir();
 
-        pedido.getCarrinho().adicionarComida(comida, quantidade);
+        pedido.adicionarComida(comida, quantidade);
     }
 
     public void adicionarBebida(Pedido pedido, int indiceBuilder, String subopcao, String adicional, int quantidade)
@@ -67,7 +67,7 @@ public class PedidoService {
         BebidaBuilder builder = disponiveis.get(indiceBuilder).get();
         Bebida bebida = builder.comSubopcao(subopcao).comAdicional(adicional).construir();
 
-        pedido.getCarrinho().adicionarBebida(bebida, quantidade);
+        pedido.adicionarBebida(bebida, quantidade);
     }
 
     public boolean finalizarPedido(Pedido pedido, MetodoPagamento metodoPagamento) {

@@ -23,11 +23,11 @@ public class LoginService {
     /**
      * Constructs a new LoginService and initializes its state to logged out.
      */
-    public LoginService() {
+    public LoginService(IFuncionarioRepository funcionarioRepository) {
         this.logado = false;
         this.idFuncionarioLogado = -1;
         this.nomeFuncionarioLogado = null;
-        this.funcionarioRepository = new FuncionarioRepository();
+        this.funcionarioRepository = funcionarioRepository;
     }
 
     /**
