@@ -1,304 +1,81 @@
 package com.projetocafeteria.service;
 
 import java.util.List;
-import java.util.Scanner;
 import java.util.function.Supplier;
 
-import com.projetocafeteria.exception.ItemNaoEncontradoException;
 import com.projetocafeteria.exception.QuantidadeInvalidaException;
+import com.projetocafeteria.exception.RegraNegocioException;
 import com.projetocafeteria.model.Cardapio;
 import com.projetocafeteria.model.Cliente;
 import com.projetocafeteria.model.Pedido;
 import com.projetocafeteria.model.bebida.Bebida;
 import com.projetocafeteria.model.bebida.builders.BebidaBuilder;
 import com.projetocafeteria.model.comida.Comida;
-import com.projetocafeteria.model.pagamento.CartaoCredito;
-import com.projetocafeteria.model.pagamento.CartaoDebito;
-import com.projetocafeteria.model.pagamento.Dinheiro;
+import com.projetocafeteria.model.comida.builders.ComidaBuilder;
 import com.projetocafeteria.model.pagamento.MetodoPagamento;
-import com.projetocafeteria.model.pagamento.Pix;
-import com.projetocafeteria.view.PainelPedidos;
+import com.projetocafeteria.repository.IPedidoRepository;
 import com.projetocafeteria.view.VisualizadorCardapio;
 
 /**
- * Service responsible for the full order-creation workflow: collecting
- * customer information, building the cart (food and drinks), handling
- * payment method selection, and registering the finished order in the
- * shared {@link PainelPedidos}.
+ * Service responsible for the full order-creation workflow.
  * <p>
- * This class relies on the Builder pattern ({@link com.projetocafeteria.model.comida.builders.ComidaBuilder}
- * and {@link BebidaBuilder}) to let the customer customize each item 
- * before it is added to the cart, and on the
- * Strategy pattern ({@link MetodoPagamento}) to decouple payment
- * processing from the order itself.
- * <p>
- * 
+ * This class coordinates the domain models, using builders and strategies,
+ * without knowing about I/O or the UI layer.
  */
-public class PedidoService{       
-    private final Scanner sc;
+public class PedidoService {       
     private final Cardapio cardapio;
+    private final IPedidoRepository pedidoRepository;
 
-    public PedidoService(Scanner sc) {
-        this.sc = sc;
+    public PedidoService(IPedidoRepository pedidoRepository) {
         this.cardapio = new Cardapio();
+        this.pedidoRepository = pedidoRepository;
     }
 
-    /**
-     * Runs the full order-placement flow for a customer: collects the
-     * customer's name, lets them add food and drink items to the cart
-     * then proceeds to payment method selection and payment processing.
-     * <p>
-     * If the customer cancels the order, the order is discarded and never
-     * registered in the order panel. If payment fails, the order is
-     * likewise not registered.
-     *
-     * @param painelPedidos the shared order panel where successfully paid
-     *                      orders are registered
-     */
-    public void realizarPedido(PainelPedidos painelPedidos) {
-        System.out.print("Digite seu nome: ");
-        String nome = sc.nextLine().trim();
-        Cliente cliente = new Cliente(nome);
-        Pedido pedido = new Pedido(cliente);
+    public Cardapio getCardapio() {
+        return this.cardapio;
+    }
 
-        boolean continuar = true;
-        while (continuar) {
-            System.out.println("\n[1] Adicionar comida");
-            System.out.println("[2] Adicionar bebida");
-            System.out.println("[3] Finalizar pedido");
-            System.out.println("[4] Cancelar Pedido");
-            System.out.print("Opção: ");
+    public Pedido iniciarPedido(String nomeCliente) {
+        return new Pedido(new Cliente(nomeCliente));
+    }
 
-            String opcao = sc.nextLine().trim();
-            try {
-                switch (opcao) {
-                    case "1" -> adicionarComida(pedido);
-                    case "2" -> adicionarBebida(pedido);
-                    case "3" -> {
-                        if (pedido.getCarrinho().estaVazio()) {
-                            System.out.println("Seu carrinho está vazio! Adicione itens antes de pagar.");
-                        } else {
-                            continuar = false;
-                        }
-                    }
-                    case "4" -> {
-                        pedido.cancelarPedido();
-                        return;
-                    }
-                    default -> System.out.println("Opção inválida! Escolha de 1 a 4.");
-                }
-            } catch (ItemNaoEncontradoException e) {
-                System.out.println("\n[OPÇÃO INVÁLIDA] " + e.getMessage());
-            }
+    public void adicionarComida(Pedido pedido, int indiceBuilder, String subopcao, String adicional, int quantidade) throws RegraNegocioException {
+        if (quantidade <= 0) {
+            throw new QuantidadeInvalidaException("A quantidade solicitada (" + quantidade + ") é inválida. Deve ser maior que zero.");
         }
-
-        escolherMetodoPagamento(pedido);
         
-        if (pedido.estaCancelado()) {
-            System.out.println("Pedido cancelado. Voltando ao menu inicial...");
-            return;
-        }
+        List<Supplier<ComidaBuilder>> disponiveis = cardapio.getComidasDisponiveis();
+        ComidaBuilder builder = disponiveis.get(indiceBuilder).get();
+        Comida comida = builder.comSubopcao(subopcao).comAdicional(adicional).construir();
+        
+        pedido.getCarrinho().adicionarComida(comida, quantidade);
+    }
 
+    public void adicionarBebida(Pedido pedido, int indiceBuilder, String subopcao, String adicional, int quantidade) throws RegraNegocioException {
+        if (quantidade <= 0) {
+            throw new QuantidadeInvalidaException("A quantidade solicitada (" + quantidade + ") é inválida. Deve ser maior que zero.");
+        }
+        
+        List<Supplier<BebidaBuilder>> disponiveis = cardapio.getBebidasDisponiveis();
+        BebidaBuilder builder = disponiveis.get(indiceBuilder).get();
+        Bebida bebida = builder.comSubopcao(subopcao).comAdicional(adicional).construir();
+        
+        pedido.getCarrinho().adicionarBebida(bebida, quantidade);
+    }
+
+    public boolean finalizarPedido(Pedido pedido, MetodoPagamento metodoPagamento) {
+        if (pedido.getCarrinho().estaVazio()) {
+            return false;
+        }
+        pedido.definirMetodoPagamento(metodoPagamento);
         boolean pago = pedido.realizarPagamento();
         
-        if(pago){
-            painelPedidos.adicionarPedido(pedido);
-            System.out.printf("Pedido #"+ pedido.getId() +" finalizado! Total: R$ %.2f%n",  pedido.calcularTotal());
+        if (pago) {
+            pedidoRepository.adicionarPedido(pedido);
         }
-        else{
-            System.out.println("Não foi possível concluir o pagamento. Pedido não foi registrado.");
-        }
+        return pago;
     }
 
-    /**
-     * Guides the customer through selecting a food item from the menu,
-     * customizing it via its builder, and adding it to the order's cart.
-     * <p>
-     * Recoverable errors (invalid quantity, invalid builder interaction)
-     * are caught and reported without adding the item to the cart,
-     * allowing the customer to try again from the cart menu.
-     *
-     * @param pedido the order whose cart the chosen item will be added to
-     * @throws ItemNaoEncontradoException if the selected index does not
-     *                                    correspond to any mapped food item
-     */
-    private void adicionarComida(Pedido pedido) {
-        List<Supplier<com.projetocafeteria.model.comida.builders.ComidaBuilder>> disponiveis = cardapio.getComidasDisponiveis();
-
-        if (disponiveis.isEmpty()) {
-            System.out.println("Nenhuma comida disponível no cardápio.");
-            return;
-        }
-
-        System.out.println("Escolha a comida:");
-        for (int i = 0; i < disponiveis.size(); i++) {
-            com.projetocafeteria.model.comida.builders.ComidaBuilder builderInicial = disponiveis.get(i).get();
-            Comida itemBase = builderInicial.construir();
-            System.out.printf("["+ (i+1) +"] "+ itemBase.exibirDescricao() +" - R$ %.2f%n", itemBase.getValor());
-        }
-
-        int indice = lerOpcaoNumerica(disponiveis.size());
-        
-        if (indice < 1 || indice > disponiveis.size()) {
-            throw new ItemNaoEncontradoException("Erro Crítico: O índice " + indice + " não corresponde a nenhuma comida mapeada no cardápio.");
-        }
-        
-        com.projetocafeteria.model.comida.builders.ComidaBuilder builderEscolhido = disponiveis.get(indice - 1).get();
-
-        try {
-            Comida comida = builderEscolhido.interagirComUsuario(sc).construir();
-            
-            int quantidade = lerQuantidade();
-            
-            pedido.getCarrinho().adicionarComida(comida, quantidade);
-            System.out.println("Adicionado: " + comida.exibirDescricao() + " x" + quantidade);
-            
-        } catch (QuantidadeInvalidaException e) {
-            System.out.println("\n[ERRO DE NEGÓCIO] " + e.getMessage());
-            System.out.println("Operação cancelada. O item não foi adicionado ao carrinho.");
-        } catch (ItemNaoEncontradoException e) { 
-            System.out.println("\n[OPÇÃO INVÁLIDA] " + e.getMessage());
-            System.out.println("Operação cancelada. Voltando ao menu de escolhas...");
-        }
-    }
-
-    /**
-     * Guides the customer through selecting a drink item from the menu,
-     * customizing it via its builder, and adding it to the order's cart.
-     * <p>
-     * Recoverable errors (invalid quantity, invalid builder interaction)
-     * are caught and reported without adding the item to the cart,
-     * allowing the customer to try again from the cart menu.
-     *
-     * @param pedido the order whose cart the chosen item will be added to
-     * @throws ItemNaoEncontradoException if the selected index does not
-     *                                    correspond to any mapped drink item
-     *                                   
-     */
-    private void adicionarBebida(Pedido pedido) {
-        List<java.util.function.Supplier<com.projetocafeteria.model.bebida.builders.BebidaBuilder>> disponiveis = cardapio.getBebidasDisponiveis();
-
-        if (disponiveis.isEmpty()) {
-            System.out.println("Nenhuma bebida disponível no cardápio.");
-            return;
-        }
-
-        System.out.println("Escolha a bebida:");
-        for (int i = 0; i < disponiveis.size(); i++) {
-            com.projetocafeteria.model.bebida.builders.BebidaBuilder builderInicial = disponiveis.get(i).get();
-            Bebida itemBase = builderInicial.construir();
-            System.out.printf("["+ (i+1) +"] "+ itemBase.exibirDescricao() +" - R$ %.2f%n", itemBase.getValor());
-        }
-
-        int indice = lerOpcaoNumerica(disponiveis.size());
-    
-        if (indice < 1 || indice > disponiveis.size()) {
-            throw new ItemNaoEncontradoException("Erro Crítico: O índice " + indice + " não corresponde a nenhuma bebida mapeada no cardápio.");
-        }
-
-        BebidaBuilder builderEscolhido = disponiveis.get(indice - 1).get();
-
-        try {
-            Bebida bebida = builderEscolhido.interagirComUsuario(sc).construir();
-            
-            int quantidade = lerQuantidade();
-            
-            pedido.getCarrinho().adicionarBebida(bebida, quantidade);
-            System.out.println("Adicionado: " + bebida.exibirDescricao() + " x" + quantidade);
-            
-        } catch (QuantidadeInvalidaException e) {
-            System.out.println("\n[ERRO DE NEGÓCIO] " + e.getMessage());
-            System.out.println("Operação cancelada. O item não foi adicionado ao carrinho.");
-        } catch (ItemNaoEncontradoException e) { 
-            System.out.println("\n[OPÇÃO INVÁLIDA] " + e.getMessage());
-            System.out.println("Operação cancelada. Voltando ao menu de escolhas...");
-        }
-    }
-
-    /**
-     * Reads a numeric option from user input, retrying until a valid
-     * integer within the range {@code [1, max]} is provided.
-     *
-     * @param max the highest valid option value
-     * @return the validated option chosen by the user
-     */
-    private int lerOpcaoNumerica(int max) {
-        while (true) {
-            try {
-                System.out.print("Opção: ");
-                int valor = Integer.parseInt(sc.nextLine().trim());
-                if (valor >= 1 && valor <= max) {
-                    return valor;
-                }
-                System.out.println("Opção inválida!");
-            } catch (NumberFormatException e) {
-                System.out.println("Digite um número válido.");
-            }
-        }
-    }
-
-    /**
-     * Reads and validates the quantity of an item to be added to the cart.
-     * <p>
-     * it signals the failure to the caller via {@link QuantidadeInvalidaException},
-     * since an invalid quantity here represents a business-rule violation.
-     *
-     * @return the validated quantity, guaranteed to be greater than zero
-     * @throws QuantidadeInvalidaException if the input is not a valid
-     *                                      integer, or if it is zero or negative
-     */
-    private int lerQuantidade() throws QuantidadeInvalidaException {
-        try {
-            System.out.print("Quantidade: ");
-            int valor = Integer.parseInt(sc.nextLine().trim());
-            
-            if (valor <= 0) {
-                throw new QuantidadeInvalidaException("A quantidade solicitada (" + valor + ") é inválida. Deve ser maior que zero.");
-            }
-            return valor;
-        } catch (NumberFormatException e) {
-            throw new QuantidadeInvalidaException("O valor digitado para a quantidade não é um número válido.");
-        }
-    }
-
-    /**
-     * Presents the available payment methods (Strategy pattern) to the
-     * customer, along with the option to cancel the order instead of
-     * paying, and applies the customer's choice to the order.
-     * <p>
-     *
-     * @param pedido the order for which a payment method is being selected
-     */
-    private void escolherMetodoPagamento(Pedido pedido) {
-        List<MetodoPagamento> opcoes = List.of(
-                new Dinheiro(), new Pix(), new CartaoCredito(), new CartaoDebito()
-        );
-
-        System.out.println("\nTotal do seu pedido: R$ " + String.format("%.2f", pedido.calcularTotal()));
-        
-        System.out.println(" ATENÇÃO: Após o pagamento, o pedido não poderá mais ser cancelado!");
-        
-        System.out.println("\nEscolha o método de pagamento:");
-        for (int i = 0; i < opcoes.size(); i++) {
-            System.out.printf("[%d] %s%n", (i + 1), opcoes.get(i).getDescricao());
-        }
-        System.out.printf("[%d] Desistir e Cancelar Pedido%n", (opcoes.size() + 1));
-
-        int escolha = lerOpcaoNumerica(opcoes.size() + 1);
-
-        if (escolha == opcoes.size() + 1) {
-            pedido.cancelarPedido();
-        } else {
-            pedido.definirMetodoPagamento(opcoes.get(escolha - 1));
-        }
-    }
-
-     /**
-     * Builds and displays the informative menu (item names, base prices,
-     * available flavors/options, and add-ons) without starting an actual
-     * order.
-     *
-     */
     public void mostrarCardapioInformativo() {
         GeradorCardapioInformativo gerador = new GeradorCardapioInformativo(this.cardapio);
         VisualizadorCardapio.exibir(gerador);
