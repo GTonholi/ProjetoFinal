@@ -32,11 +32,11 @@ public class LoginService {
         return this.logado;
     }
 
-     /**
+    /**
      * Logs out the currently authenticated employee, clearing the session
      * state.
      */
-    public void deslogar(){
+    public void deslogar() {
         this.logado = false;
         this.idFuncionarioLogado = 0;
         this.nomeFuncionarioLogado = null;
@@ -54,7 +54,8 @@ public class LoginService {
     /**
      * Returns the name of the currently logged-in employee.
      *
-     * @return the logged-in employee's name, or {@code null} if no employee is logged in
+     * @return the logged-in employee's name, or {@code null} if no employee is
+     *         logged in
      */
     public String getNomeFuncionarioLogado() {
         return nomeFuncionarioLogado;

@@ -9,6 +9,14 @@ import com.projetocafeteria.model.comida.Comida;
 import com.projetocafeteria.model.comida.decorators.CoberturaDecorator;
 import com.projetocafeteria.model.comida.decorators.SaborBoloDecorator;
 
+/**
+ * Concrete Builder for creating {@link com.projetocafeteria.model.comida.Bolo} objects.
+ * <p>
+ * Implements the {@link ComidaBuilder} interface to construct a customized cake.
+ * Requires a mandatory flavor sub-option (e.g., Chocolate, Laranja, Formigueiro) 
+ * via {@link SaborBoloDecorator}. Customers can also choose to add extra 
+ * frosting ("Cobertura") via {@link CoberturaDecorator}, increasing its base price.
+ */
 public class BoloBuilder implements ComidaBuilder {
     private Comida bolo;
 

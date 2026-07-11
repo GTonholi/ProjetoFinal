@@ -14,13 +14,39 @@ import com.projetocafeteria.model.pagamento.*;
 import com.projetocafeteria.service.PedidoService;
 import com.projetocafeteria.repository.IPedidoRepository;
 
+/**
+ * The primary View layer class responsible for interacting with the Customer.
+ * <p>
+ * This class handles all input and output (I/O) related to the customer's 
+ * order creation flow. It prompts the customer for choices, displays the 
+ * available menu options (fetching data via the service), and reads user input 
+ * using a {@link Scanner}. 
+ * By extracting I/O operations from the service layer, it strictly adheres 
+ * to the Single Responsibility Principle (SRP) and ensures the core domain 
+ * remains independent of the presentation mechanism.
+ */
 public class MenuCliente {
     private final Scanner sc;
 
+    /**
+     * Constructs a new MenuCliente, using the shared scanner for user input.
+     * 
+     * @param sc the shared {@link Scanner} instance used for reading console input
+     */
     public MenuCliente(Scanner sc){
         this.sc = sc;
     }
     
+    /**
+     * Starts the main interaction loop for the customer.
+     * <p>
+     * Displays a greeting and allows the customer to view the informative menu, 
+     * start a new order, view the active orders panel, or return to the main menu.
+     * 
+     * @param pedidoService the service handling order business logic
+     * @param painelPedidos the view component for displaying active orders
+     * @param pedidoRepository the data layer for accessing active orders
+     */
     public void run(PedidoService pedidoService, PainelPedidos painelPedidos, IPedidoRepository pedidoRepository) {
         boolean rodando = true;
         
@@ -45,6 +71,12 @@ public class MenuCliente {
         }
     }
 
+    /**
+     * Prompts the customer to select a global action from the main customer menu.
+     * 
+     * @param sc the shared {@link Scanner}
+     * @return the selected numeric option (0 to 3)
+     */
     private int selecionarOpcaoGlob(Scanner sc) {
         System.out.println("\n        BEM-VINDO À CAFETERIA         \n");
         System.out.println("Em que podemos ajudar?\n");
@@ -65,6 +97,14 @@ public class MenuCliente {
         }
     }
 
+    /**
+     * Initiates the full workflow for creating a new order.
+     * <p>
+     * Collects the customer's name and repeatedly allows them to add food 
+     * or drink items until they choose to checkout or cancel the order.
+     * 
+     * @param pedidoService the service orchestrating order construction
+     */
     private void realizarPedido(PedidoService pedidoService) {
         System.out.print("Digite seu nome: ");
         String nome = sc.nextLine().trim();
@@ -104,6 +144,14 @@ public class MenuCliente {
         escolherMetodoPagamento(pedido, pedidoService);
     }
 
+    /**
+     * Guides the customer through selecting a food item, picking available 
+     * sub-options and add-ons, and defining the quantity.
+     * 
+     * @param pedido the current active order
+     * @param pedidoService the service handling order logic
+     * @throws RegraNegocioException if business validations fail (e.g., negative quantity)
+     */
     private void adicionarComida(Pedido pedido, PedidoService pedidoService) throws RegraNegocioException {
         List<Supplier<ComidaBuilder>> disponiveis = pedidoService.getCardapio().getComidasDisponiveis();
         if (disponiveis.isEmpty()) {
@@ -128,6 +176,14 @@ public class MenuCliente {
         System.out.println("Item adicionado ao carrinho!");
     }
 
+    /**
+     * Guides the customer through selecting a drink item, picking available 
+     * sub-options and add-ons, and defining the quantity.
+     * 
+     * @param pedido the current active order
+     * @param pedidoService the service handling order logic
+     * @throws RegraNegocioException if business validations fail (e.g., negative quantity)
+     */
     private void adicionarBebida(Pedido pedido, PedidoService pedidoService) throws RegraNegocioException {
         List<Supplier<BebidaBuilder>> disponiveis = pedidoService.getCardapio().getBebidasDisponiveis();
         if (disponiveis.isEmpty()) {
@@ -152,6 +208,12 @@ public class MenuCliente {
         System.out.println("Item adicionado ao carrinho!");
     }
 
+    /**
+     * Prompts the user to select a sub-option (e.g., flavor or size) if the item supports it.
+     * 
+     * @param info the commercial information regarding the item
+     * @return the string name of the selected sub-option, or {@code null} if none exist
+     */
     private String escolherSubopcao(ItemCardapioInfo info) {
         List<String> subopcoes = info.getSubopcoes();
         if (subopcoes.isEmpty()) return null;
@@ -164,6 +226,12 @@ public class MenuCliente {
         return subopcoes.get(escolha - 1);
     }
 
+    /**
+     * Prompts the user to select an add-on (e.g., milk, sugar) if the item supports it.
+     * 
+     * @param info the commercial information regarding the item
+     * @return the string name of the selected add-on, or {@code null} if the user declines
+     */
     private String escolherAdicional(ItemCardapioInfo info) {
         List<String> adicionais = info.getAdicionais();
         if (adicionais.isEmpty()) return null;
@@ -178,6 +246,13 @@ public class MenuCliente {
         return adicionais.get(escolha - 1);
     }
 
+    /**
+     * Prompts the customer to select a payment method from the available strategies.
+     * Applies the chosen payment method and signals the service to complete the checkout.
+     * 
+     * @param pedido the order being finalized
+     * @param pedidoService the service that will process the payment logic
+     */
     private void escolherMetodoPagamento(Pedido pedido, PedidoService pedidoService) {
         List<MetodoPagamento> opcoes = List.of(
                 new Dinheiro(), new Pix(), new CartaoCredito(), new CartaoDebito()
@@ -205,6 +280,12 @@ public class MenuCliente {
         }
     }
 
+    /**
+     * Utility method to safely read a 1-based numeric option from the user.
+     * 
+     * @param max the maximum allowed choice inclusive
+     * @return a valid integer between 1 and {@code max}
+     */
     private int lerOpcaoNumerica(int max) {
         while (true) {
             try {
@@ -218,6 +299,12 @@ public class MenuCliente {
         }
     }
 
+    /**
+     * Utility method to safely read a 0-based numeric option from the user.
+     * 
+     * @param max the maximum allowed choice inclusive
+     * @return a valid integer between 0 and {@code max}
+     */
     private int lerOpcaoNumericaZeroBase(int max) {
         while (true) {
             try {
@@ -231,6 +318,11 @@ public class MenuCliente {
         }
     }
 
+    /**
+     * Utility method to safely read the quantity of an item from the user.
+     * 
+     * @return the entered quantity integer
+     */
     private int lerQuantidade() {
         while (true) {
             try {
@@ -242,3 +334,4 @@ public class MenuCliente {
         }
     }
 }
+

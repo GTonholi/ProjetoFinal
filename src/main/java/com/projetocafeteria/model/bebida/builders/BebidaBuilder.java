@@ -20,17 +20,18 @@ public interface BebidaBuilder extends DisponivelNoCardapio {
     BebidaBuilder comSubopcao(String nomeSubopcao);
 
     /**
-     * Applies an add-on (e.g., extra topping or milk) to the drink being built.
+     * Customizes the drink item with a specific add-on (e.g., sugar, milk).
      * 
-     * @param nomeAdicional the chosen add-on's name
-     * @return this builder
+     * @param nomeAdicional the exact string name of the chosen add-on. 
+     *                      If {@code null}, no add-on is applied.
+     * @return the current builder instance for method chaining
      */
     BebidaBuilder comAdicional(String nomeAdicional);
 
     /**
-     * Produces the final {@link Bebida} instance reflecting the applied customizations.
+     * Finalizes the building process and returns the fully constructed drink item.
      * 
-     * @return the constructed, ready-to-add-to-cart drink item
+     * @return the constructed {@link Bebida} instance, potentially wrapped in decorators
      */
     Bebida construir();
 }

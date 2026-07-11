@@ -8,6 +8,14 @@ import com.projetocafeteria.model.bebida.Bebida;
 import com.projetocafeteria.model.bebida.Cafe;
 import com.projetocafeteria.model.bebida.decorators.LeiteDecorator;
 
+/**
+ * Concrete Builder for creating {@link com.projetocafeteria.model.bebida.Cafe} objects.
+ * <p>
+ * Implements the {@link BebidaBuilder} interface to construct a customized coffee.
+ * Customers can optionally add milk ("Leite") to the coffee, which is dynamically 
+ * applied using the {@link LeiteDecorator} to increase the total price and 
+ * update the description.
+ */
 public class CafeBuilder implements BebidaBuilder {
     private Bebida cafe;
 

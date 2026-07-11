@@ -6,7 +6,7 @@ import com.projetocafeteria.model.comida.Comida;
 /**
  * Builder contract for constructing a customized {@link Comida} instance.
  * <p>
- * Customizations are passed as strings (e.g. from a UI layer) without the 
+ * Customizations are passed as strings (e.g. from a UI layer) without the
  * domain needing to know about I/O devices (like Scanner).
  */
 public interface ComidaBuilder extends DisponivelNoCardapio {
@@ -28,7 +28,8 @@ public interface ComidaBuilder extends DisponivelNoCardapio {
     ComidaBuilder comAdicional(String nomeAdicional);
 
     /**
-     * Produces the final {@link Comida} instance reflecting the applied customizations.
+     * Produces the final {@link Comida} instance reflecting the applied
+     * customizations.
      * 
      * @return the constructed, ready-to-add-to-cart food item
      */

@@ -22,7 +22,7 @@ public class MenuFuncionario {
     private final LoginService loginService;
     private final Scanner sc;
 
-    public MenuFuncionario(Scanner sc){
+    public MenuFuncionario(Scanner sc) {
         this.sc = sc;
         this.loginService = new LoginService();
     }
@@ -36,8 +36,8 @@ public class MenuFuncionario {
      * @param painelPedidos the shared order panel, used to list and update
      *                      in-progress orders
      */
-    public void run(PainelPedidos painelPedidos, com.projetocafeteria.repository.IPedidoRepository pedidoRepository){
-        if(!loginService.isUsuarioLogado()){
+    public void run(PainelPedidos painelPedidos, com.projetocafeteria.repository.IPedidoRepository pedidoRepository) {
+        if (!loginService.isUsuarioLogado()) {
             logarFuncionario();
         }
 
@@ -50,7 +50,7 @@ public class MenuFuncionario {
         while (logado && loginService.isUsuarioLogado()) {
             try {
                 int escolha = selecionarOpcao();
-                
+
                 if (escolha == 2) {
                     loginService.deslogar();
                     logado = false;
@@ -58,14 +58,14 @@ public class MenuFuncionario {
                 } else {
                     processarEscolha(escolha, painelPedidos, pedidoRepository);
                 }
-                
+
             } catch (ItemNaoEncontradoException e) {
                 System.out.println("\n[ERRO DE SISTEMA] " + e.getMessage());
                 System.out.println("Retornando ao menu do funcionário...");
             }
         }
     }
-    
+
     private void logarFuncionario() {
         int tentativas = 3;
         while (tentativas > 0 && !loginService.isUsuarioLogado()) {
@@ -82,8 +82,8 @@ public class MenuFuncionario {
             }
         }
     }
-    
-     /**
+
+    /**
      * Prompts the employee to select an option from the employee menu and
      * validates the input until a valid numeric option is provided.
      *
@@ -91,7 +91,7 @@ public class MenuFuncionario {
      */
     private int selecionarOpcao() {
         exibirMenu();
-        
+
         while (true) {
             try {
                 System.out.print("Opção: ");
@@ -127,7 +127,8 @@ public class MenuFuncionario {
      * @throws ItemNaoEncontradoException if the provided option does not
      *                                    match any valid menu case
      */
-    private void processarEscolha(int escolha, PainelPedidos painelPedidos, com.projetocafeteria.repository.IPedidoRepository pedidoRepository) {
+    private void processarEscolha(int escolha, PainelPedidos painelPedidos,
+            com.projetocafeteria.repository.IPedidoRepository pedidoRepository) {
         switch (escolha) {
             case 1 -> atualizarEstadoPedido(painelPedidos, pedidoRepository);
             default -> throw new ItemNaoEncontradoException("A opção de menu " + escolha + " não existe.");
@@ -142,15 +143,16 @@ public class MenuFuncionario {
      * order to update, and advances its preparation status by one step
      * if it has not yet been delivered.
      *
-     * @param painelPedidos the shared order panel, used to list orders
+     * @param painelPedidos    the shared order panel, used to list orders
      * @param pedidoRepository the repository used to locate orders
      * @throws ItemNaoEncontradoException if no order matches the id provided
      *                                    by the employee
      */
-    private void atualizarEstadoPedido(PainelPedidos painelPedidos, com.projetocafeteria.repository.IPedidoRepository pedidoRepository) {
+    private void atualizarEstadoPedido(PainelPedidos painelPedidos,
+            com.projetocafeteria.repository.IPedidoRepository pedidoRepository) {
         List<Pedido> emAndamento = pedidoRepository.listarPedidosEmAndamento();
 
-        if(emAndamento.isEmpty()){
+        if (emAndamento.isEmpty()) {
             System.out.println("Nenhum pedido em andamento no momento.");
             return;
         }
@@ -192,4 +194,3 @@ public class MenuFuncionario {
         }
     }
 }
-

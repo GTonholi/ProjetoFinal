@@ -8,6 +8,14 @@ import com.projetocafeteria.model.bebida.Bebida;
 import com.projetocafeteria.model.bebida.Cappuccino;
 import com.projetocafeteria.model.bebida.decorators.AdicionalCappuccinoDecorator;
 
+/**
+ * Concrete Builder for creating {@link com.projetocafeteria.model.bebida.Cappuccino} objects.
+ * <p>
+ * Implements the {@link BebidaBuilder} interface to construct a customized cappuccino.
+ * Customers can add specific toppings such as Cinnamon ("Canela") or 
+ * Chocolate Powder ("Chocolate em Pó"). These additions are managed via the 
+ * {@link CanelaDecorator} and {@link ChocolateDecorator}.
+ */
 public class CappuccinoBuilder implements BebidaBuilder {
     private Bebida cappuccino;
 

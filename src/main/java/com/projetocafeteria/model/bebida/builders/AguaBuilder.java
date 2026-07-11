@@ -8,6 +8,15 @@ import com.projetocafeteria.exception.ItemNaoEncontradoException;
 import com.projetocafeteria.model.ItemCardapioInfo;
 import com.projetocafeteria.model.bebida.Agua;;
 
+/**
+ * Concrete Builder for creating {@link com.projetocafeteria.model.bebida.Agua} objects.
+ * <p>
+ * Implements the {@link BebidaBuilder} interface to provide a step-by-step 
+ * construction of a water drink. It allows the customer to choose between 
+ * sparkling ("Com Gás") and still ("Sem Gás") water using decorators.
+ * Since water has no extra add-ons (like sugar or milk), the {@code comAdicional} 
+ * method returns the builder unchanged.
+ */
 public class AguaBuilder implements BebidaBuilder {
     private Bebida agua;
 

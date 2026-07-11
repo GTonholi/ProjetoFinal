@@ -5,13 +5,17 @@ import com.projetocafeteria.model.Pedido;
 
 /**
  * Interface that defines the contract for an order repository.
+ * <p>
+ * This interface abstracts the underlying storage mechanism for {@link Pedido}
+ * instances, adhering to the Dependency Inversion Principle (DIP) and
+ * ensuring that services do not depend on concrete persistence classes.
  */
 public interface IPedidoRepository {
 
     /**
-     * Saves a new order to the repository.
+     * Saves a new order into the repository.
      * 
-     * @param pedido the order to save
+     * @param pedido the {@link Pedido} instance to be persisted
      */
     void adicionarPedido(Pedido pedido);
 

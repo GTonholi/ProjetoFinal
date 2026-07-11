@@ -9,6 +9,14 @@ import com.projetocafeteria.model.bebida.decorators.AcucarDecorator;
 import com.projetocafeteria.model.bebida.decorators.SaborSucoDecorator;
 import com.projetocafeteria.exception.ItemNaoEncontradoException;
 
+/**
+ * Concrete Builder for creating {@link com.projetocafeteria.model.bebida.Suco} objects.
+ * <p>
+ * Implements the {@link BebidaBuilder} interface to construct a customized juice.
+ * It requires a mandatory flavor sub-option (e.g., Orange, Pineapple, Strawberry, Grape)
+ * which alters the base juice state. Customers may also optionally add sugar 
+ * ("Com Açucar") via the {@link AcucarDecorator}.
+ */
 public class SucoBuilder implements BebidaBuilder {
     private Bebida suco;
 

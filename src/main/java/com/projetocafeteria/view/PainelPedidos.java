@@ -35,7 +35,7 @@ public class PainelPedidos {
      * @param pedido the order to print
      */
     private void imprimirPedido(Pedido pedido) {
-        System.out.printf("\nPedido #" + pedido.getId() + " - Cliente: " + pedido.getNomeCliente() + " - Status: " + pedido.consultarPreparo());
+        System.out.printf("\nPedido #" + pedido.getId() + " - Cliente: " + pedido.getNomeCliente() + " - Status: "
+                + pedido.consultarPreparo());
     }
 }
-

@@ -17,12 +17,15 @@ import com.projetocafeteria.repository.IPedidoRepository;
 import com.projetocafeteria.view.VisualizadorCardapio;
 
 /**
- * Service responsible for the full order-creation workflow.
+ * Service class responsible for orchestrating the creation and finalization
+ * of an order ({@link Pedido}).
  * <p>
  * This class coordinates the domain models, using builders and strategies,
- * without knowing about I/O or the UI layer.
+ * without knowing about I/O or the UI layer (no {@code Scanner} dependencies).
+ * It acts as an intermediate controller between the Presentation layer
+ * (e.g. {@code MenuCliente}) and the Domain/Repository layer.
  */
-public class PedidoService {       
+public class PedidoService {
     private final Cardapio cardapio;
     private final IPedidoRepository pedidoRepository;
 
@@ -39,27 +42,31 @@ public class PedidoService {
         return new Pedido(new Cliente(nomeCliente));
     }
 
-    public void adicionarComida(Pedido pedido, int indiceBuilder, String subopcao, String adicional, int quantidade) throws RegraNegocioException {
+    public void adicionarComida(Pedido pedido, int indiceBuilder, String subopcao, String adicional, int quantidade)
+            throws RegraNegocioException {
         if (quantidade <= 0) {
-            throw new QuantidadeInvalidaException("A quantidade solicitada (" + quantidade + ") é inválida. Deve ser maior que zero.");
+            throw new QuantidadeInvalidaException(
+                    "A quantidade solicitada (" + quantidade + ") é inválida. Deve ser maior que zero.");
         }
-        
+
         List<Supplier<ComidaBuilder>> disponiveis = cardapio.getComidasDisponiveis();
         ComidaBuilder builder = disponiveis.get(indiceBuilder).get();
         Comida comida = builder.comSubopcao(subopcao).comAdicional(adicional).construir();
-        
+
         pedido.getCarrinho().adicionarComida(comida, quantidade);
     }
 
-    public void adicionarBebida(Pedido pedido, int indiceBuilder, String subopcao, String adicional, int quantidade) throws RegraNegocioException {
+    public void adicionarBebida(Pedido pedido, int indiceBuilder, String subopcao, String adicional, int quantidade)
+            throws RegraNegocioException {
         if (quantidade <= 0) {
-            throw new QuantidadeInvalidaException("A quantidade solicitada (" + quantidade + ") é inválida. Deve ser maior que zero.");
+            throw new QuantidadeInvalidaException(
+                    "A quantidade solicitada (" + quantidade + ") é inválida. Deve ser maior que zero.");
         }
-        
+
         List<Supplier<BebidaBuilder>> disponiveis = cardapio.getBebidasDisponiveis();
         BebidaBuilder builder = disponiveis.get(indiceBuilder).get();
         Bebida bebida = builder.comSubopcao(subopcao).comAdicional(adicional).construir();
-        
+
         pedido.getCarrinho().adicionarBebida(bebida, quantidade);
     }
 
@@ -69,7 +76,7 @@ public class PedidoService {
         }
         pedido.definirMetodoPagamento(metodoPagamento);
         boolean pago = pedido.realizarPagamento();
-        
+
         if (pago) {
             pedidoRepository.adicionarPedido(pedido);
         }
@@ -81,4 +88,3 @@ public class PedidoService {
         VisualizadorCardapio.exibir(gerador);
     }
 }
-

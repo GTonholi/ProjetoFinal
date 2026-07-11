@@ -7,6 +7,14 @@ import com.projetocafeteria.model.ItemCardapioInfo;
 import com.projetocafeteria.model.comida.Comida;
 import com.projetocafeteria.model.comida.decorators.SaborTortaDecorator;
 
+/**
+ * Concrete Builder for creating {@link com.projetocafeteria.model.comida.Torta} objects.
+ * <p>
+ * Implements the {@link ComidaBuilder} interface to construct a customized pie.
+ * Requires a mandatory filling/flavor (e.g., Chicken, Hearts of Palm, Apple) 
+ * via {@link SaborTortaDecorator}. It currently does not support additional 
+ * toppings or extras.
+ */
 public class TortaBuilder implements ComidaBuilder {
     private Comida torta;
 

@@ -8,6 +8,13 @@ import com.projetocafeteria.model.comida.Comida;
 import com.projetocafeteria.model.comida.PaoDeQueijo;
 import com.projetocafeteria.model.comida.decorators.RecheioPaoDeQueijoDecorator;
 
+/**
+ * Concrete Builder for creating {@link com.projetocafeteria.model.comida.PaoDeQueijo} objects.
+ * <p>
+ * Implements the {@link ComidaBuilder} interface to construct a customized cheese bread.
+ * It allows customers to optionally add cream cheese filling ("Recheado com Requeijão") 
+ * which wraps the item in a {@link RecheioPaoDeQueijoDecorator} to increase the price.
+ */
 public class PaoDeQueijoBuilder implements ComidaBuilder {
     private Comida paoDeQueijo;
 
