@@ -92,7 +92,7 @@ public class MenuCliente {
      * @return the selected numeric option (0 to 3)
      */
     private int selecionarOpcaoGlob(Scanner sc) {
-        System.out.println("\n        BEM-VINDO À CAFETERIA         \n");
+        System.out.println("--- MENU CLIENTE ---");
         System.out.println("Em que podemos ajudar?\n");
         System.out.println("[1] Ver Cardápio");
         System.out.println("[2] Realizar pedido");
@@ -365,7 +365,7 @@ public class MenuCliente {
     }
 
     private void limparTela() {
-        System.out.print("\033[H\033[2J\033[95m");
+        System.out.print("\033[H\033[2J\033[3J\033[95m");
         System.out.flush();
     }
     

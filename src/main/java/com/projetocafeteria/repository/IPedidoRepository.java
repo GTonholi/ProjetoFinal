@@ -34,4 +34,11 @@ public interface IPedidoRepository {
      * @return the order with the specified identifier, or null if not found
      */
     Pedido buscarPorId(int id);
+
+    /**
+     * Retrieves all orders, regardless of their current status.
+     * 
+     * @return a list of all orders
+     */
+    List<Pedido> listarTodosPedidos();
 }

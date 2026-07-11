@@ -7,6 +7,8 @@ import com.projetocafeteria.service.PedidoService;
 import com.projetocafeteria.view.MenuCliente;
 import com.projetocafeteria.view.MenuFuncionario;
 import com.projetocafeteria.view.PainelPedidos;
+import com.projetocafeteria.repository.IPedidoRepository;
+import com.projetocafeteria.repository.InMemoryPedidoRepository;
 
 /**
  * Entry point of the cafeteria management system.
@@ -29,7 +31,7 @@ public class Main {
      */
     public static void main(String[] args) {
         try (Scanner sc = new Scanner(System.in)) {
-            com.projetocafeteria.repository.IPedidoRepository pedidoRepository = new com.projetocafeteria.repository.InMemoryPedidoRepository();
+            IPedidoRepository pedidoRepository = new InMemoryPedidoRepository();
             PainelPedidos painelPedidos = new PainelPedidos();
             PedidoService pedidoService = new PedidoService(pedidoRepository);
 
@@ -90,7 +92,7 @@ public class Main {
      * Prints the main menu options to the console.
      */
     private static void exibirMenu() {
-        System.out.println("\n\n[1] Visualizar painel de pedidos ");
+        System.out.println("[1] Visualizar painel de pedidos ");
         System.out.println("Acessar como:");
         System.out.println("[2] Cliente");
         System.out.println("[3] Funcionário");
@@ -98,7 +100,7 @@ public class Main {
     }
 
     private static boolean processarEscolha(int escolha, PainelPedidos painelPedidos,
-            com.projetocafeteria.repository.IPedidoRepository pedidoRepository, PedidoService pedidoService,
+            IPedidoRepository pedidoRepository, PedidoService pedidoService,
             MenuCliente menuCliente, MenuFuncionario menuFuncionario) {
         switch (escolha) {
             case 0 -> {
@@ -106,7 +108,7 @@ public class Main {
             }
             case 1 -> {
                 limparTela();
-                painelPedidos.exibir(pedidoRepository.listarPedidosEmAndamento());
+                painelPedidos.exibir(pedidoRepository.listarTodosPedidos());
             }
             case 2 -> menuCliente.run(pedidoService, painelPedidos, pedidoRepository);
             case 3 -> menuFuncionario.run(painelPedidos, pedidoRepository);
@@ -116,7 +118,7 @@ public class Main {
     }
 
     private static void limparTela() {
-        System.out.print("\033[H\033[2J\033[95m");
+        System.out.print("\033[H\033[2J\033[3J\033[95m");
         System.out.flush();
     }
     

@@ -6,6 +6,7 @@ import java.util.Scanner;
 import com.projetocafeteria.exception.ItemNaoEncontradoException;
 import com.projetocafeteria.model.Pedido;
 import com.projetocafeteria.service.LoginService;
+import com.projetocafeteria.repository.IPedidoRepository;
 
 /**
  * View responsible for the employee-facing interaction flow.
@@ -36,7 +37,7 @@ public class MenuFuncionario {
      * @param painelPedidos the shared order panel, used to list and update
      *                      in-progress orders
      */
-    public void run(PainelPedidos painelPedidos, com.projetocafeteria.repository.IPedidoRepository pedidoRepository) {
+    public void run(PainelPedidos painelPedidos, IPedidoRepository pedidoRepository) {
         limparTela();
         if (!loginService.isUsuarioLogado()) {
             logarFuncionario();
@@ -119,7 +120,7 @@ public class MenuFuncionario {
      */
     private void exibirMenu() {
         String nome = loginService.getNomeFuncionarioLogado();
-        System.out.println("\n-----------------------------------------------");
+        System.out.println("--- MENU FUNCIONÁRIO ---");
         System.out.println("Bem vindo, " + nome + ". No que podemos ajudar?");
         System.out.println("[1] Atualizar estado do Pedido");
         System.out.println("[2] Deslogar do sistema");
@@ -135,7 +136,7 @@ public class MenuFuncionario {
      *                                    match any valid menu case
      */
     private void processarEscolha(int escolha, PainelPedidos painelPedidos,
-            com.projetocafeteria.repository.IPedidoRepository pedidoRepository) {
+            IPedidoRepository pedidoRepository) {
         switch (escolha) {
             case 1 -> atualizarEstadoPedido(painelPedidos, pedidoRepository);
             default -> throw new ItemNaoEncontradoException("A opção de menu " + escolha + " não existe.");
@@ -156,7 +157,7 @@ public class MenuFuncionario {
      *                                    by the employee
      */
     private void atualizarEstadoPedido(PainelPedidos painelPedidos,
-            com.projetocafeteria.repository.IPedidoRepository pedidoRepository) {
+            IPedidoRepository pedidoRepository) {
         List<Pedido> emAndamento = pedidoRepository.listarPedidosEmAndamento();
 
         if (emAndamento.isEmpty()) {
@@ -167,8 +168,12 @@ public class MenuFuncionario {
         System.out.println("=== Pedidos em andamento ===");
         painelPedidos.exibir(emAndamento);
 
-        System.out.print("\n\nDigite o id do pedido que deseja atualizar: ");
+        System.out.print("\n\nDigite o id do pedido que deseja atualizar (ou 0 para voltar): ");
         int id = lerId();
+
+        if (id == 0) {
+            return;
+        }
 
         Pedido pedido = pedidoRepository.buscarPorId(id);
 
@@ -202,7 +207,7 @@ public class MenuFuncionario {
     }
 
     private void limparTela() {
-        System.out.print("\033[H\033[2J\033[95m");
+        System.out.print("\033[H\033[2J\033[3J\033[95m");
         System.out.flush();
     }
     
