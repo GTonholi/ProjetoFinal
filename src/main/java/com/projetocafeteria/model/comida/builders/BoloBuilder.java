@@ -1,7 +1,6 @@
 package com.projetocafeteria.model.comida.builders;
 
 import java.util.List;
-import java.util.Scanner;
 
 import com.projetocafeteria.exception.ItemNaoEncontradoException;
 import com.projetocafeteria.model.ItemCardapioInfo;
@@ -19,8 +18,9 @@ public class BoloBuilder implements ComidaBuilder {
 
     @Override
     public ComidaBuilder comSubopcao(String nomeSubopcao) {
-        if (nomeSubopcao == null) return this;
-        
+        if (nomeSubopcao == null)
+            return this;
+
         switch (nomeSubopcao) {
             case "Chocolate":
             case "Laranja":
@@ -35,8 +35,9 @@ public class BoloBuilder implements ComidaBuilder {
 
     @Override
     public ComidaBuilder comAdicional(String nomeAdicional) {
-        if (nomeAdicional == null) return this;
-        
+        if (nomeAdicional == null)
+            return this;
+
         if (nomeAdicional.equals("Cobertura (+R$ 3,00)")) {
             this.bolo = new CoberturaDecorator(this.bolo);
         } else {
@@ -53,12 +54,11 @@ public class BoloBuilder implements ComidaBuilder {
     @Override
     public ItemCardapioInfo obterInformacaoComercial() {
         Comida base = new com.projetocafeteria.model.comida.Bolo();
-        
+
         return new ItemCardapioInfo(
-            base.exibirDescricao(),
-            base.getValor(),
-            List.of("Chocolate", "Laranja", "Formigueiro"),
-            List.of("Cobertura (+R$ 3,00)")
-        );
+                base.exibirDescricao(),
+                base.getValor(),
+                List.of("Chocolate", "Laranja", "Formigueiro"),
+                List.of("Cobertura (+R$ 3,00)"));
     }
 }
