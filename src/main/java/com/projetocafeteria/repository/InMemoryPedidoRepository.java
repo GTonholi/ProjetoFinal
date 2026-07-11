@@ -13,14 +13,16 @@ import com.projetocafeteria.model.Pedido;
  */
 public class InMemoryPedidoRepository implements IPedidoRepository {
     private final List<Pedido> pedidos = new ArrayList<>();
+    private int proximoId = 1;
 
     /**
-     * Adds a new order to the internal list.
+     * Adds a new order to the internal list, assigning it a unique ID.
      * 
      * @param pedido the order to be stored
      */
     @Override
     public void adicionarPedido(Pedido pedido) {
+        pedido.setId(proximoId++);
         pedidos.add(pedido);
     }
 

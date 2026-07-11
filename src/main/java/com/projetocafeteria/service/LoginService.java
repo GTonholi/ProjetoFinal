@@ -2,6 +2,7 @@ package com.projetocafeteria.service;
 
 import com.projetocafeteria.model.Funcionario;
 import com.projetocafeteria.repository.FuncionarioRepository;
+import com.projetocafeteria.repository.IFuncionarioRepository;
 
 /**
  * Service responsible for authenticating employees and tracking the
@@ -17,9 +18,15 @@ public class LoginService {
     private boolean logado;
     private int idFuncionarioLogado;
     private String nomeFuncionarioLogado;
-    private final FuncionarioRepository funcionarioRepository;
+    private final IFuncionarioRepository funcionarioRepository;
 
+    /**
+     * Constructs a new LoginService and initializes its state to logged out.
+     */
     public LoginService() {
+        this.logado = false;
+        this.idFuncionarioLogado = -1;
+        this.nomeFuncionarioLogado = null;
         this.funcionarioRepository = new FuncionarioRepository();
     }
 
