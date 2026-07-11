@@ -39,7 +39,7 @@ public class LoginService {
         int tentativas = 3;
 
         while (tentativas > 0 && !logado) {
-            System.out.print("Login: ");
+            System.out.print("\n\nLogin: ");
             String login = sc.nextLine().trim();
             System.out.print("Senha: ");
             String senha = sc.nextLine().trim();
@@ -50,10 +50,10 @@ public class LoginService {
                 this.idFuncionarioLogado = encontrado.getId();
                 this.nomeFuncionarioLogado = encontrado.getNome();
                 this.logado = true;
-                System.out.println("Login realizado com sucesso!");
+                System.out.println("\nLogin realizado com sucesso!");
             } else {
                 tentativas--;
-                System.out.println("Login ou senha inválidos. Tentativas restantes: " + tentativas);
+                System.out.println("\nLogin ou senha inválidos. Tentativas restantes: " + tentativas);
             }
         }
     }
