@@ -1,6 +1,7 @@
 package com.projetocafeteria.model.bebida;
 
-public interface Bebida {
-    double getValor();
-    String exibirDescricao();
+import com.projetocafeteria.model.Produto;
+
+public interface Bebida extends Produto{
+    
 }

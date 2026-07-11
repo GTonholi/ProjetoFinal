@@ -112,13 +112,13 @@ public class PedidoService{
             
             int quantidade = lerQuantidade();
             
-            pedido.getCarrinho().AdicionarComida(comida, quantidade);
+            pedido.getCarrinho().adicionarComida(comida, quantidade);
             System.out.println("Adicionado: " + comida.exibirDescricao() + " x" + quantidade);
             
         } catch (QuantidadeInvalidaException e) {
             System.out.println("\n[ERRO DE NEGÓCIO] " + e.getMessage());
             System.out.println("Operação cancelada. O item não foi adicionado ao carrinho.");
-        } catch (ItemNaoEncontradoException e) { // <-- ESSE CATCH VAI SEGURAR O SEU ERRO!
+        } catch (ItemNaoEncontradoException e) { 
             System.out.println("\n[OPÇÃO INVÁLIDA] " + e.getMessage());
             System.out.println("Operação cancelada. Voltando ao menu de escolhas...");
         }
@@ -153,7 +153,7 @@ public class PedidoService{
             
             int quantidade = lerQuantidade();
             
-            pedido.getCarrinho().AdicionarBebida(bebida, quantidade);
+            pedido.getCarrinho().adicionarBebida(bebida, quantidade);
             System.out.println("Adicionado: " + bebida.exibirDescricao() + " x" + quantidade);
             
         } catch (QuantidadeInvalidaException e) {
