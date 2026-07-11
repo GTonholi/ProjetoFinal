@@ -9,6 +9,8 @@ import com.projetocafeteria.view.MenuFuncionario;
 import com.projetocafeteria.view.PainelPedidos;
 import com.projetocafeteria.repository.IPedidoRepository;
 import com.projetocafeteria.repository.InMemoryPedidoRepository;
+import com.projetocafeteria.repository.IFuncionarioRepository;
+import com.projetocafeteria.repository.FuncionarioRepository;
 
 /**
  * Entry point of the cafeteria management system.
@@ -32,11 +34,12 @@ public class Main {
     public static void main(String[] args) {
         try (Scanner sc = new Scanner(System.in)) {
             IPedidoRepository pedidoRepository = new InMemoryPedidoRepository();
+            IFuncionarioRepository funcionarioRepository = new FuncionarioRepository();
             PainelPedidos painelPedidos = new PainelPedidos();
             PedidoService pedidoService = new PedidoService(pedidoRepository);
 
             MenuCliente menuCliente = new MenuCliente(sc);
-            MenuFuncionario menuFuncionario = new MenuFuncionario(sc);
+            MenuFuncionario menuFuncionario = new MenuFuncionario(sc, funcionarioRepository);
 
             boolean continuar = true;
             while (continuar) {

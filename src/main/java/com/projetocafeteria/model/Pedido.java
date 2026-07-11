@@ -3,6 +3,8 @@ package com.projetocafeteria.model;
 import com.projetocafeteria.model.pagamento.MetodoPagamento;
 import com.projetocafeteria.model.status.StatusPedido;
 import com.projetocafeteria.model.status.StatusPendente;
+import com.projetocafeteria.model.bebida.Bebida;
+import com.projetocafeteria.model.comida.Comida;
 
 /**
  * Represents a customer's order in the cafeteria system.
@@ -195,5 +197,25 @@ public class Pedido {
      */
     public Carrinho getCarrinho() {
         return carrinho;
+    }
+
+    /**
+     * Adds a given quantity of a drink to this order.
+     *
+     * @param bebida the drink to add
+     * @param quant  the quantity to add
+     */
+    public void adicionarBebida(Bebida bebida, int quant) {
+        carrinho.adicionarBebida(bebida, quant);
+    }
+
+    /**
+     * Adds a given quantity of a food item to this order.
+     *
+     * @param comida the food item to add
+     * @param quant  the quantity to add
+     */
+    public void adicionarComida(Comida comida, int quant) {
+        carrinho.adicionarComida(comida, quant);
     }
 }

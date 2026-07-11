@@ -7,6 +7,7 @@ import com.projetocafeteria.exception.ItemNaoEncontradoException;
 import com.projetocafeteria.model.Pedido;
 import com.projetocafeteria.service.LoginService;
 import com.projetocafeteria.repository.IPedidoRepository;
+import com.projetocafeteria.repository.IFuncionarioRepository;
 
 /**
  * View responsible for the employee-facing interaction flow.
@@ -23,9 +24,9 @@ public class MenuFuncionario {
     private final LoginService loginService;
     private final Scanner sc;
 
-    public MenuFuncionario(Scanner sc) {
+    public MenuFuncionario(Scanner sc, IFuncionarioRepository funcionarioRepository) {
         this.sc = sc;
-        this.loginService = new LoginService();
+        this.loginService = new LoginService(funcionarioRepository);
     }
 
     /**
