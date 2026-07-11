@@ -4,6 +4,23 @@ import com.projetocafeteria.model.pagamento.MetodoPagamento;
 import com.projetocafeteria.model.status.StatusPedido;
 import com.projetocafeteria.model.status.StatusPendente;
 
+/**
+ * Represents a customer's order in the cafeteria system.
+ * <p>
+ * A {@code Pedido} aggregates a {@link Cliente}, a {@link Carrinho} of
+ * chosen items, a chosen {@link MetodoPagamento} (Strategy pattern), and
+ * its current lifecycle state, modeled with two independent axes:
+ * <ul>
+ *   <li>{@link StatusPedido} (State pattern) — governs whether the order
+ *       can be paid or cancelled, and what happens when those actions are
+ *       attempted in each state (pending, paid, cancelled);</li>
+ *   <li>{@link Preparo} — tracks the kitchen's preparation progress
+ *       (pending, preparing, ready, delivered).</li>
+ * </ul>
+ * Each instance is automatically assigned a unique, sequentially
+ * generated id upon construction.
+ * 
+ */
 public class Pedido {
     private static int proximoId = 1;
 
@@ -21,10 +38,27 @@ public class Pedido {
         this.status = new StatusPendente();
     }
 
+     /**
+     * Sets the payment method to be used when this order's payment is
+     * processed.
+     *
+     * @param metodoPagamento the chosen payment strategy
+     */
     public void definirMetodoPagamento(MetodoPagamento metodoPagamento) {
         this.metodoPagamento = metodoPagamento;
     }
 
+    /**
+     * Attempts to process payment for this order, delegating the
+     * decision of whether payment is currently valid to the order's
+     * current {@link StatusPedido}.
+     * <p>
+     * If no payment method has been selected, payment fails immediately
+     * without consulting the current status.
+     *
+     * @return {@code true} if payment was successfully processed,
+     *         {@code false} otherwise
+     */
     public boolean realizarPagamento(){
         if (metodoPagamento == null) {
             System.out.println("Nenhum método de pagamento selecionado.");
@@ -33,26 +67,71 @@ public class Pedido {
         return status.pagar(this);
     }
 
+    /**
+     * Executes the payment transaction for this order's total using the
+     * previously selected payment method.
+     * <p>
+     * This method performs no state-related validation; it is intended to
+     * be invoked by {@link StatusPedido} implementations 
+     * once they have already determined that payment is permitted in the 
+     * current state.
+     *
+     * @return {@code true} if the payment method reported a successful
+     *         transaction, {@code false} otherwise
+     */
     public boolean validarPagamento(){
         return this.metodoPagamento.realizarPagamento(this.calcularTotal());    
     }
 
+    /**
+     * Attempts to cancel this order, delegating the decision of whether
+     * cancellation is currently valid to the order's current
+     * {@link StatusPedido}.
+     */
     public void cancelarPedido(){
         status.cancelar(this);
     }
 
+    /**
+     * Transitions this order to a new payment/lifecycle state.
+     * <p>
+     * Intended to be called by {@link StatusPedido} implementations as
+     * part of a state transition, not directly by view or service classes.
+     *
+     * @param status the new state to transition this order to
+     */
     public void setStatus(StatusPedido status){
         this.status = status;
     }
 
+    /**
+     * Checks whether this order has been cancelled.
+     *
+     * @return {@code true} if the order's current state is cancelled,
+     *         {@code false} otherwise
+     */
     public boolean estaCancelado(){
         return status.estaCancelado();
     }
 
+    /**
+     * Checks whether this order has reached the final preparation stage.
+     *
+     * @return {@code true} if the order's preparation status is
+     *         {@link Preparo#ENTREGUE}, {@code false} otherwise
+     */
     public boolean pedidoEstaEntregue(){
         return this.preparo.equals(Preparo.ENTREGUE);
     }
 
+    /**
+     * Advances this order's preparation status to the next stage in the
+     * {@link Preparo} sequence.
+     * <p>
+     * If the order has already reached the final stage
+     * ({@link Preparo#ENTREGUE}), this method has no effect other than
+     * printing an informational message.
+     */
     public void avancarPreparo() {
         Preparo[] valores = Preparo.values();
         int proximoIndex = preparo.ordinal() + 1;
@@ -64,22 +143,49 @@ public class Pedido {
         }
     }
 
+    /**
+     * Returns this order's unique identifier.
+     *
+     * @return the order id
+     */
     public int getId(){
         return id;
     }
 
+    /**
+     * Returns the name of the customer who placed this order.
+     *
+     * @return the customer's name
+     */
     public String getNomeCliente(){
         return cliente.getNome();
     }
 
+    /**
+     * Calculates the total price of this order based on the items
+     * currently in its cart.
+     *
+     * @return the order's total price
+     */
     public double calcularTotal(){
         return carrinho.calcularTotal();
     }
 
+    /**
+     * Returns this order's current kitchen preparation stage.
+     *
+     * @return the current {@link Preparo} value
+     */
     public Preparo consultarPreparo(){
         return preparo;
     }
 
+    /**
+     * Returns this order's cart, allowing items to be added or its
+     * contents to be inspected.
+     *
+     * @return the order's {@link Carrinho}
+     */
     public Carrinho getCarrinho() {
         return carrinho;
     }
