@@ -1,38 +1,24 @@
 package com.projetocafeteria.view;
 
-import java.util.ArrayList;
 import java.util.List;
-
 import com.projetocafeteria.model.Pedido;
 
 /**
- * View responsible for tracking and displaying all orders placed in the
- * system.
+ * View responsible for displaying orders placed in the system.
  * <p>
- * Acts as the single in-memory registry of {@link Pedido} instances,
- * providing lookup and filtering operations.
- * <p>
- * This class does not persist data across application executions; all
- * orders are lost once the program terminates.
+ * This class handles only presentation, relying on a repository to
+ * manage the actual order data.
  */
 public class PainelPedidos {
-    private final List<Pedido> pedidos = new ArrayList<>();
 
     /**
-     * Registers a new order in the panel.
-     *
-     */
-    public void adicionarPedido(Pedido pedido) {
-        pedidos.add(pedido);
-    }
-
-    /**
-     * Prints all registered orders to the console.
+     * Prints a given list of orders to the console.
      * 
+     * @param pedidos the list of orders to display
      */
-    public void exibir(){
-         if (pedidos.isEmpty()) {
-            System.out.println("Nenhum pedido registrado ainda.");
+    public void exibir(List<Pedido> pedidos) {
+        if (pedidos == null || pedidos.isEmpty()) {
+            System.out.println("Nenhum pedido para exibir.");
             return;
         }
 
@@ -42,45 +28,14 @@ public class PainelPedidos {
         }
     }
 
-
     /**
-     * Returns the orders that are still in progress, orders that have
-     * neither been fully delivered nor cancelled.
-     * <p>
-     *
-     * @return an immutable list of orders that are neither delivered nor
-     *         cancelled; never {@code null}, may be empty
-     */
-    public List<Pedido> listarPedidosEmAndamento() {
-        return pedidos.stream()
-                .filter(p -> !p.pedidoEstaEntregue())
-                .filter(p -> !p.estaCancelado())
-                .toList();
-    }
-
-    /**
-     * Searches for an order by its unique identifier.
-     *
-     * @param id the identifier of the order to look for
-     * @return the matching {@link Pedido}, or {@code null} if no order with
-     *         the given id has been registered
-     */
-    public Pedido buscarPorId(int id) {
-        for (Pedido pedido : pedidos) {
-            if (pedido.getId() == id) {
-                return pedido;
-            }
-        }
-        return null;
-    }
-
-     /**
      * Prints a single order's summary line, including its id, customer
      * name, and current preparation status.
      *
      * @param pedido the order to print
      */
     private void imprimirPedido(Pedido pedido) {
-        System.out.printf("\nPedido #"+ pedido.getId() +" - Cliente: "+ pedido.getNomeCliente() +" - Status:" + pedido.consultarPreparo());
+        System.out.printf("\nPedido #" + pedido.getId() + " - Cliente: " + pedido.getNomeCliente() + " - Status: " + pedido.consultarPreparo());
     }
 }
+

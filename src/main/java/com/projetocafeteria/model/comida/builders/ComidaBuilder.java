@@ -1,40 +1,34 @@
 package com.projetocafeteria.model.comida.builders;
 
-import java.util.Scanner;
-
 import com.projetocafeteria.model.DisponivelNoCardapio;
 import com.projetocafeteria.model.comida.Comida;
 
 /**
- * Builder contract for constructing a customized {@link Comida} instance
- * through direct interaction with the customer.
+ * Builder contract for constructing a customized {@link Comida} instance.
  * <p>
- * Each concrete implementation is responsible for prompting the customer for any
- * relevant customizations via {@link #interagirComUsuario(Scanner)},
- * then producing the final, possibly decorated {@link Comida} instance via {@link #construir()}.
- * <p>
- * 
- * Instances of this interface are obtained fresh for each customer
- * interaction, so builder implementations may safely hold mutable state
- * collected during {@link #interagirComUsuario(Scanner)}.
- * 
+ * Customizations are passed as strings (e.g. from a UI layer) without the 
+ * domain needing to know about I/O devices (like Scanner).
  */
 public interface ComidaBuilder extends DisponivelNoCardapio {
 
     /**
-     * Prompts the customer, via the given scanner, for any customizations
-     * available for this food, storing the customer's choices in this builder's internal state.
-     *
-     * @param scanner the shared scanner used to read the customer's input
-     * @return this builder, allowing the call to be chained directly into
-     *         {@link #construir()}
+     * Applies a sub-option (e.g., flavor) to the food being built.
      * 
+     * @param nomeSubopcao the chosen sub-option's name
+     * @return this builder
      */
-    ComidaBuilder interagirComUsuario(Scanner scanner);
+    ComidaBuilder comSubopcao(String nomeSubopcao);
 
     /**
-     * Produces the final {@link Comida} instance reflecting the
-     * customizations collected via {@link #interagirComUsuario(Scanner)}.
+     * Applies an add-on (e.g., extra topping) to the food being built.
+     * 
+     * @param nomeAdicional the chosen add-on's name
+     * @return this builder
+     */
+    ComidaBuilder comAdicional(String nomeAdicional);
+
+    /**
+     * Produces the final {@link Comida} instance reflecting the applied customizations.
      * 
      * @return the constructed, ready-to-add-to-cart food item
      */

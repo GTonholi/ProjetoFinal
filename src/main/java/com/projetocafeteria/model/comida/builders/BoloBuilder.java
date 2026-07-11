@@ -18,33 +18,30 @@ public class BoloBuilder implements ComidaBuilder {
     }
 
     @Override
-    public ComidaBuilder interagirComUsuario(Scanner scanner) {
-        System.out.println("\nEscolha o sabor do bolo:");
-        System.out.println("  [1] Chocolate\n  [2] Laranja\n  [3] Formigueiro");
-        System.out.print("Opção: ");
-        int opcaoSabor = scanner.nextInt();
-        scanner.nextLine();
-
-        String sabor = switch (opcaoSabor) {
-            case 1 -> "Chocolate";
-            case 2 -> "Laranja";
-            case 3 -> "Formigueiro";
-            default -> throw new ItemNaoEncontradoException("O sabor de número " + opcaoSabor + " não existe.");
-        };
-        this.bolo = new SaborBoloDecorator(this.bolo, sabor);
-
-        System.out.print("Deseja adicionar cobertura? +R$3.0 (1 - Sim / 2 - Não): ");
-        int querCobertura = scanner.nextInt();
-        scanner.nextLine();
-
-        if (querCobertura != 1 && querCobertura != 2) {
-            throw new ItemNaoEncontradoException("Opção inválida (" + querCobertura + ") para a cobertura.");
+    public ComidaBuilder comSubopcao(String nomeSubopcao) {
+        if (nomeSubopcao == null) return this;
+        
+        switch (nomeSubopcao) {
+            case "Chocolate":
+            case "Laranja":
+            case "Formigueiro":
+                this.bolo = new SaborBoloDecorator(this.bolo, nomeSubopcao);
+                break;
+            default:
+                throw new ItemNaoEncontradoException("O sabor " + nomeSubopcao + " não existe para este bolo.");
         }
+        return this;
+    }
 
-        if (querCobertura == 1) {
+    @Override
+    public ComidaBuilder comAdicional(String nomeAdicional) {
+        if (nomeAdicional == null) return this;
+        
+        if (nomeAdicional.equals("Cobertura (+R$ 3,00)")) {
             this.bolo = new CoberturaDecorator(this.bolo);
+        } else {
+            throw new ItemNaoEncontradoException("O adicional " + nomeAdicional + " não é válido para este bolo.");
         }
-
         return this;
     }
 
