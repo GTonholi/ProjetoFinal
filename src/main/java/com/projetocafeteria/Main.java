@@ -7,6 +7,8 @@ import com.projetocafeteria.service.PedidoService;
 import com.projetocafeteria.view.MenuCliente;
 import com.projetocafeteria.view.MenuFuncionario;
 import com.projetocafeteria.view.PainelPedidos;
+import com.projetocafeteria.repository.IPedidoRepository;
+import com.projetocafeteria.repository.InMemoryPedidoRepository;
 
 /**
  * Entry point of the cafeteria management system.
@@ -29,7 +31,7 @@ public class Main {
      */
     public static void main(String[] args) {
         try (Scanner sc = new Scanner(System.in)) {
-            com.projetocafeteria.repository.IPedidoRepository pedidoRepository = new com.projetocafeteria.repository.InMemoryPedidoRepository();
+            IPedidoRepository pedidoRepository = new InMemoryPedidoRepository();
             PainelPedidos painelPedidos = new PainelPedidos();
             PedidoService pedidoService = new PedidoService(pedidoRepository);
 
@@ -39,15 +41,23 @@ public class Main {
             boolean continuar = true;
             while (continuar) {
                 try {
+                    limparTela();
                     int escolha = selecionarOpcao(sc);
                     continuar = processarEscolha(escolha, painelPedidos, pedidoRepository, pedidoService, menuCliente,
                             menuFuncionario);
+                    
+                    if (escolha == 1) { // Se escolheu ver o painel de pedidos pela Main
+                        System.out.println("\nPressione ENTER para voltar");
+                        sc.nextLine();
+                    }
                 } catch (ItemNaoEncontradoException e) {
                     System.out.println("\n[AVISO DO SISTEMA] " + e.getMessage());
                     System.out.println("Retornando ao menu principal da cafeteria...");
+                    pausar(sc);
                 }
             }
             System.out.println("\nEncerrando o sistema. Até logo!");
+            System.out.print("\033[0m");
         }
     }
 
@@ -82,7 +92,7 @@ public class Main {
      * Prints the main menu options to the console.
      */
     private static void exibirMenu() {
-        System.out.println("\n\n[1] Visualizar painel de pedidos ");
+        System.out.println("[1] Visualizar painel de pedidos ");
         System.out.println("Acessar como:");
         System.out.println("[2] Cliente");
         System.out.println("[3] Funcionário");
@@ -90,17 +100,30 @@ public class Main {
     }
 
     private static boolean processarEscolha(int escolha, PainelPedidos painelPedidos,
-            com.projetocafeteria.repository.IPedidoRepository pedidoRepository, PedidoService pedidoService,
+            IPedidoRepository pedidoRepository, PedidoService pedidoService,
             MenuCliente menuCliente, MenuFuncionario menuFuncionario) {
         switch (escolha) {
             case 0 -> {
                 return false;
             }
-            case 1 -> painelPedidos.exibir(pedidoRepository.listarPedidosEmAndamento());
+            case 1 -> {
+                limparTela();
+                painelPedidos.exibir(pedidoRepository.listarTodosPedidos());
+            }
             case 2 -> menuCliente.run(pedidoService, painelPedidos, pedidoRepository);
             case 3 -> menuFuncionario.run(painelPedidos, pedidoRepository);
             default -> throw new ItemNaoEncontradoException("A opção global " + escolha + " não é válida.");
         }
         return true;
+    }
+
+    private static void limparTela() {
+        System.out.print("\033[H\033[2J\033[3J\033[95m");
+        System.out.flush();
+    }
+    
+    private static void pausar(Scanner sc) {
+        System.out.println("\nPressione ENTER para continuar...");
+        sc.nextLine();
     }
 }

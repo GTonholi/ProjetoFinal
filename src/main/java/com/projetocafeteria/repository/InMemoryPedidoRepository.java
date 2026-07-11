@@ -55,4 +55,14 @@ public class InMemoryPedidoRepository implements IPedidoRepository {
         }
         return null;
     }
+
+    /**
+     * Retrieves a copy of all stored orders, regardless of their status.
+     * 
+     * @return a complete list of all {@link Pedido} instances
+     */
+    @Override
+    public List<Pedido> listarTodosPedidos() {
+        return new ArrayList<>(pedidos);
+    }
 }
