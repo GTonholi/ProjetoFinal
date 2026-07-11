@@ -20,6 +20,20 @@ import com.projetocafeteria.model.pagamento.Pix;
 import com.projetocafeteria.view.PainelPedidos;
 import com.projetocafeteria.view.VisualizadorCardapio;
 
+/**
+ * Service responsible for the full order-creation workflow: collecting
+ * customer information, building the cart (food and drinks), handling
+ * payment method selection, and registering the finished order in the
+ * shared {@link PainelPedidos}.
+ * <p>
+ * This class relies on the Builder pattern ({@link com.projetocafeteria.model.comida.builders.ComidaBuilder}
+ * and {@link BebidaBuilder}) to let the customer customize each item 
+ * before it is added to the cart, and on the
+ * Strategy pattern ({@link MetodoPagamento}) to decouple payment
+ * processing from the order itself.
+ * <p>
+ * 
+ */
 public class PedidoService{       
     private final Scanner sc;
     private final Cardapio cardapio;
@@ -29,6 +43,18 @@ public class PedidoService{
         this.cardapio = new Cardapio();
     }
 
+    /**
+     * Runs the full order-placement flow for a customer: collects the
+     * customer's name, lets them add food and drink items to the cart
+     * then proceeds to payment method selection and payment processing.
+     * <p>
+     * If the customer cancels the order, the order is discarded and never
+     * registered in the order panel. If payment fails, the order is
+     * likewise not registered.
+     *
+     * @param painelPedidos the shared order panel where successfully paid
+     *                      orders are registered
+     */
     public void realizarPedido(PainelPedidos painelPedidos) {
         System.out.print("Digite seu nome: ");
         String nome = sc.nextLine().trim();
@@ -84,6 +110,18 @@ public class PedidoService{
         }
     }
 
+    /**
+     * Guides the customer through selecting a food item from the menu,
+     * customizing it via its builder, and adding it to the order's cart.
+     * <p>
+     * Recoverable errors (invalid quantity, invalid builder interaction)
+     * are caught and reported without adding the item to the cart,
+     * allowing the customer to try again from the cart menu.
+     *
+     * @param pedido the order whose cart the chosen item will be added to
+     * @throws ItemNaoEncontradoException if the selected index does not
+     *                                    correspond to any mapped food item
+     */
     private void adicionarComida(Pedido pedido) {
         List<Supplier<com.projetocafeteria.model.comida.builders.ComidaBuilder>> disponiveis = cardapio.getComidasDisponiveis();
 
@@ -124,7 +162,19 @@ public class PedidoService{
         }
     }
 
-
+    /**
+     * Guides the customer through selecting a drink item from the menu,
+     * customizing it via its builder, and adding it to the order's cart.
+     * <p>
+     * Recoverable errors (invalid quantity, invalid builder interaction)
+     * are caught and reported without adding the item to the cart,
+     * allowing the customer to try again from the cart menu.
+     *
+     * @param pedido the order whose cart the chosen item will be added to
+     * @throws ItemNaoEncontradoException if the selected index does not
+     *                                    correspond to any mapped drink item
+     *                                   
+     */
     private void adicionarBebida(Pedido pedido) {
         List<java.util.function.Supplier<com.projetocafeteria.model.bebida.builders.BebidaBuilder>> disponiveis = cardapio.getBebidasDisponiveis();
 
@@ -165,6 +215,13 @@ public class PedidoService{
         }
     }
 
+    /**
+     * Reads a numeric option from user input, retrying until a valid
+     * integer within the range {@code [1, max]} is provided.
+     *
+     * @param max the highest valid option value
+     * @return the validated option chosen by the user
+     */
     private int lerOpcaoNumerica(int max) {
         while (true) {
             try {
@@ -180,6 +237,16 @@ public class PedidoService{
         }
     }
 
+    /**
+     * Reads and validates the quantity of an item to be added to the cart.
+     * <p>
+     * it signals the failure to the caller via {@link QuantidadeInvalidaException},
+     * since an invalid quantity here represents a business-rule violation.
+     *
+     * @return the validated quantity, guaranteed to be greater than zero
+     * @throws QuantidadeInvalidaException if the input is not a valid
+     *                                      integer, or if it is zero or negative
+     */
     private int lerQuantidade() throws QuantidadeInvalidaException {
         try {
             System.out.print("Quantidade: ");
@@ -194,6 +261,14 @@ public class PedidoService{
         }
     }
 
+    /**
+     * Presents the available payment methods (Strategy pattern) to the
+     * customer, along with the option to cancel the order instead of
+     * paying, and applies the customer's choice to the order.
+     * <p>
+     *
+     * @param pedido the order for which a payment method is being selected
+     */
     private void escolherMetodoPagamento(Pedido pedido) {
         List<MetodoPagamento> opcoes = List.of(
                 new Dinheiro(), new Pix(), new CartaoCredito(), new CartaoDebito()
@@ -218,6 +293,12 @@ public class PedidoService{
         }
     }
 
+     /**
+     * Builds and displays the informative menu (item names, base prices,
+     * available flavors/options, and add-ons) without starting an actual
+     * order.
+     *
+     */
     public void mostrarCardapioInformativo() {
         GeradorCardapioInformativo gerador = new GeradorCardapioInformativo(this.cardapio);
         VisualizadorCardapio.exibir(gerador);

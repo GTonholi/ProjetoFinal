@@ -7,6 +7,17 @@ import com.projetocafeteria.exception.ItemNaoEncontradoException;
 import com.projetocafeteria.model.Pedido;
 import com.projetocafeteria.service.LoginService;
 
+/**
+ * View responsible for the employee-facing interaction flow.
+ * <p>
+ * Handles employee authentication (delegated to {@link LoginService}) and,
+ * once logged in, presents a menu loop allowing the employee to update the
+ * preparation status of in-progress orders or log out of the system.
+ * <p>
+ * The menu loop is resilient to invalid selections and missing orders:
+ * an {@link ItemNaoEncontradoException} thrown while processing an option
+ * is caught and reported without exiting the employee session.
+ */
 public class MenuFuncionario {
     private final LoginService loginService;
     private final Scanner sc;
@@ -16,6 +27,15 @@ public class MenuFuncionario {
         this.loginService = new LoginService(this.sc);
     }
 
+    /**
+     * Runs the employee interaction flow: authenticates the employee if
+     * not already logged in, then repeatedly presents the employee menu
+     * until the employee chooses to log out.
+     * <p>
+     *
+     * @param painelPedidos the shared order panel, used to list and update
+     *                      in-progress orders
+     */
     public void run(PainelPedidos painelPedidos){
         if(!loginService.isUsuarioLogado()){
             loginService.logarFuncionario();
@@ -46,6 +66,12 @@ public class MenuFuncionario {
         }
     }
     
+     /**
+     * Prompts the employee to select an option from the employee menu and
+     * validates the input until a valid numeric option is provided.
+     *
+     * @return the validated menu option selected by the employee
+     */
     private int selecionarOpcao() {
         exibirMenu();
         
@@ -63,6 +89,10 @@ public class MenuFuncionario {
         }
     }
 
+    /**
+     * Prints the employee menu options to the console, including a
+     * personalized greeting with the logged-in employee's name.
+     */
     private void exibirMenu() {
         String nome = loginService.getNomeFuncionarioLogado();
         System.out.println("\n-----------------------------------------------");
@@ -71,6 +101,15 @@ public class MenuFuncionario {
         System.out.println("[2] Deslogar do sistema");
     }
 
+    /**
+     * Executes the action corresponding to the selected employee menu
+     * option.
+     *
+     * @param escolha       the validated menu option selected by the employee
+     * @param painelPedidos the shared order panel, used to update order status
+     * @throws ItemNaoEncontradoException if the provided option does not
+     *                                    match any valid menu case
+     */
     private void processarEscolha(int escolha, PainelPedidos painelPedidos) {
         switch (escolha) {
             case 1 -> atualizarEstadoPedido(painelPedidos);
@@ -78,6 +117,18 @@ public class MenuFuncionario {
         }
     }
 
+    /**
+     * Guides the employee through updating the preparation status of an
+     * in-progress order.
+     * <p>
+     * Lists all orders currently in progress, prompts for the id of the
+     * order to update, and advances its preparation status by one step
+     * if it has not yet been delivered.
+     *
+     * @param painelPedidos the shared order panel, used to list and locate orders
+     * @throws ItemNaoEncontradoException if no order matches the id provided
+     *                                    by the employee
+     */
     private void atualizarEstadoPedido(PainelPedidos painelPedidos) {
         List<Pedido> emAndamento = painelPedidos.listarPedidosEmAndamento();
 
@@ -109,6 +160,12 @@ public class MenuFuncionario {
         System.out.println("Pedido #" + pedido.getId() + " atualizado para: " + pedido.consultarPreparo());
     }
 
+    /**
+     * Reads an order id from user input, retrying until a valid integer
+     * is provided.
+     *
+     * @return the order id entered by the employee
+     */
     private int lerId() {
         while (true) {
             try {

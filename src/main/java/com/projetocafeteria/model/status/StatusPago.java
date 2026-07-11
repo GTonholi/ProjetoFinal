@@ -12,7 +12,6 @@ public class StatusPago implements StatusPedido{
 
     @Override 
     public void cancelar(Pedido pedido){
-        System.out.println("Reembolsando o valor do pedido.");
-        pedido.setStatus(new StatusCancelado());
+        System.out.println("O pedido já está pago, não há mais como cancelar!");
     }
 }
