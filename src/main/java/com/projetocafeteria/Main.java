@@ -39,12 +39,19 @@ public class Main {
             boolean continuar = true;
             while (continuar) {
                 try {
+                    limparTela();
                     int escolha = selecionarOpcao(sc);
                     continuar = processarEscolha(escolha, painelPedidos, pedidoRepository, pedidoService, menuCliente,
                             menuFuncionario);
+                    
+                    if (escolha == 1) { // Se escolheu ver o painel de pedidos pela Main
+                        System.out.println("\nPressione ENTER para voltar");
+                        sc.nextLine();
+                    }
                 } catch (ItemNaoEncontradoException e) {
                     System.out.println("\n[AVISO DO SISTEMA] " + e.getMessage());
                     System.out.println("Retornando ao menu principal da cafeteria...");
+                    pausar(sc);
                 }
             }
             System.out.println("\nEncerrando o sistema. Até logo!");
@@ -96,11 +103,24 @@ public class Main {
             case 0 -> {
                 return false;
             }
-            case 1 -> painelPedidos.exibir(pedidoRepository.listarPedidosEmAndamento());
+            case 1 -> {
+                limparTela();
+                painelPedidos.exibir(pedidoRepository.listarPedidosEmAndamento());
+            }
             case 2 -> menuCliente.run(pedidoService, painelPedidos, pedidoRepository);
             case 3 -> menuFuncionario.run(painelPedidos, pedidoRepository);
             default -> throw new ItemNaoEncontradoException("A opção global " + escolha + " não é válida.");
         }
         return true;
+    }
+
+    private static void limparTela() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+    
+    private static void pausar(Scanner sc) {
+        System.out.println("\nPressione ENTER para continuar...");
+        sc.nextLine();
     }
 }

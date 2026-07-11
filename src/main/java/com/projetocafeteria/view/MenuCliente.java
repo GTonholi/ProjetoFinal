@@ -52,12 +52,25 @@ public class MenuCliente {
         
         while (rodando) {
             try {
+                limparTela();
                 int escolha = selecionarOpcaoGlob(sc);
                 
                 switch (escolha) {
-                    case 1 -> pedidoService.mostrarCardapioInformativo();
-                    case 2 -> realizarPedido(pedidoService);
-                    case 3 -> painelPedidos.exibir(pedidoRepository.listarPedidosEmAndamento());
+                    case 1 -> {
+                        limparTela();
+                        pedidoService.mostrarCardapioInformativo();
+                        pausar();
+                    }
+                    case 2 -> {
+                        limparTela();
+                        realizarPedido(pedidoService);
+                        pausar();
+                    }
+                    case 3 -> {
+                        limparTela();
+                        painelPedidos.exibir(pedidoRepository.listarPedidosEmAndamento());
+                        pausarVoltar();
+                    }
                     case 0 -> {
                         System.out.println("\nvoltando a tela inicial...\n");
                         rodando = false;
@@ -67,6 +80,7 @@ public class MenuCliente {
                 
             } catch (ItemNaoEncontradoException e) {
                 System.out.println("\n[ERRO DE NAVEGAÇÃO] " + e.getMessage());
+                pausar();
             }
         }
     }
@@ -112,7 +126,9 @@ public class MenuCliente {
 
         boolean continuar = true;
         while (continuar) {
-            System.out.println("\n[1] Adicionar comida");
+            limparTela();
+            System.out.println("\n--- Realizando Pedido de " + nome + " ---");
+            System.out.println("[1] Adicionar comida");
             System.out.println("[2] Adicionar bebida");
             System.out.println("[3] Finalizar pedido");
             System.out.println("[4] Cancelar Pedido");
@@ -121,11 +137,20 @@ public class MenuCliente {
             String opcao = sc.nextLine().trim();
             try {
                 switch (opcao) {
-                    case "1" -> adicionarComida(pedido, pedidoService);
-                    case "2" -> adicionarBebida(pedido, pedidoService);
+                    case "1" -> {
+                        limparTela();
+                        adicionarComida(pedido, pedidoService);
+                        pausar();
+                    }
+                    case "2" -> {
+                        limparTela();
+                        adicionarBebida(pedido, pedidoService);
+                        pausar();
+                    }
                     case "3" -> {
                         if (pedido.getCarrinho().estaVazio()) {
                             System.out.println("Seu carrinho está vazio! Adicione itens antes de pagar.");
+                            pausar();
                         } else {
                             continuar = false;
                         }
@@ -134,13 +159,18 @@ public class MenuCliente {
                         pedido.cancelarPedido();
                         return;
                     }
-                    default -> System.out.println("Opção inválida! Escolha de 1 a 4.");
+                    default -> {
+                        System.out.println("Opção inválida! Escolha de 1 a 4.");
+                        pausar();
+                    }
                 }
             } catch (RegraNegocioException | ItemNaoEncontradoException e) {
                 System.out.println("\n[ERRO] " + e.getMessage());
+                pausar();
             }
         }
-
+        
+        limparTela();
         escolherMetodoPagamento(pedido, pedidoService);
     }
 
@@ -332,6 +362,21 @@ public class MenuCliente {
                 System.out.println("Digite um número válido.");
             }
         }
+    }
+
+    private void limparTela() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+    
+    private void pausar() {
+        System.out.println("\nPressione ENTER para continuar...");
+        sc.nextLine();
+    }
+    
+    private void pausarVoltar() {
+        System.out.println("\nPressione ENTER para voltar");
+        sc.nextLine();
     }
 }
 

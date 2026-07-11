@@ -37,31 +37,38 @@ public class MenuFuncionario {
      *                      in-progress orders
      */
     public void run(PainelPedidos painelPedidos, com.projetocafeteria.repository.IPedidoRepository pedidoRepository) {
+        limparTela();
         if (!loginService.isUsuarioLogado()) {
             logarFuncionario();
         }
 
         if (!loginService.isUsuarioLogado()) {
             System.out.println("Não foi possível autenticar. Encerrando.");
+            pausar();
             return;
         }
 
         boolean logado = true;
         while (logado && loginService.isUsuarioLogado()) {
             try {
+                limparTela();
                 int escolha = selecionarOpcao();
 
                 if (escolha == 2) {
                     loginService.deslogar();
                     logado = false;
                     System.out.println("\nLogout efetuado com sucesso.");
+                    pausar();
                 } else {
+                    limparTela();
                     processarEscolha(escolha, painelPedidos, pedidoRepository);
+                    pausar();
                 }
 
             } catch (ItemNaoEncontradoException e) {
                 System.out.println("\n[ERRO DE SISTEMA] " + e.getMessage());
                 System.out.println("Retornando ao menu do funcionário...");
+                pausar();
             }
         }
     }
@@ -192,5 +199,15 @@ public class MenuFuncionario {
                 System.out.print("Digite um número válido: ");
             }
         }
+    }
+
+    private void limparTela() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+    
+    private void pausar() {
+        System.out.println("\nPressione ENTER para continuar...");
+        sc.nextLine();
     }
 }
