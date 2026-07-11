@@ -25,7 +25,7 @@ import com.projetocafeteria.model.Funcionario;
  * in-memory implementation of employee storage.
  * 
  */
-public final class FuncionarioRepository {
+public final class FuncionarioRepository implements IFuncionarioRepository {
     private final List<Funcionario> funcionarios = new ArrayList<>();
     private int proximoId = 1;
 

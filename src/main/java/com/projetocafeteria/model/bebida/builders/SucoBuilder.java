@@ -1,7 +1,6 @@
 package com.projetocafeteria.model.bebida.builders;
 
 import java.util.List;
-import java.util.Scanner;
 
 import com.projetocafeteria.model.ItemCardapioInfo;
 import com.projetocafeteria.model.bebida.Bebida;
@@ -10,6 +9,14 @@ import com.projetocafeteria.model.bebida.decorators.AcucarDecorator;
 import com.projetocafeteria.model.bebida.decorators.SaborSucoDecorator;
 import com.projetocafeteria.exception.ItemNaoEncontradoException;
 
+/**
+ * Concrete Builder for creating {@link com.projetocafeteria.model.bebida.Suco} objects.
+ * <p>
+ * Implements the {@link BebidaBuilder} interface to construct a customized juice.
+ * It requires a mandatory flavor sub-option (e.g., Orange, Pineapple, Strawberry, Grape)
+ * which alters the base juice state. Customers may also optionally add sugar 
+ * ("Com Açucar") via the {@link AcucarDecorator}.
+ */
 public class SucoBuilder implements BebidaBuilder {
     private Bebida suco;
 
@@ -18,36 +25,33 @@ public class SucoBuilder implements BebidaBuilder {
     }
 
     @Override
-    public BebidaBuilder interagirComUsuario(Scanner scanner) {
-        System.out.println("\nEscolha o sabor do suco:");
-        System.out.println("  [1] Laranja\n  [2] Abacaxi\n  [3] Morango\n  [4] Uva");
-        System.out.print("Opção: ");
-        int opcaoSabor = scanner.nextInt();
-        scanner.nextLine();
-        
-        String sabor = switch (opcaoSabor) {
-            case 1 -> "Laranja";
-            case 2 -> "Abacaxi";
-            case 3 -> "Morango";
-            case 4 -> "Uva";
-            default -> throw new ItemNaoEncontradoException("O sabor de número " + opcaoSabor + " não existe.");
-        };
-        
-        this.suco = new SaborSucoDecorator(this.suco, sabor);
+    public BebidaBuilder comSubopcao(String nomeSubopcao) {
+        if (nomeSubopcao == null)
+            return this;
 
-        System.out.println("\nDeseja adicionar açúcar? (1 - Sim / 2 - Não)");
-        System.out.print("Opção: ");
-        int querAcucar = scanner.nextInt();
-        scanner.nextLine();
-
-        if (querAcucar != 1 && querAcucar != 2) {
-            throw new ItemNaoEncontradoException("Opção inválida (" + querAcucar + ") para o adicional de açúcar.");
+        switch (nomeSubopcao) {
+            case "Laranja":
+            case "Abacaxi":
+            case "Morango":
+            case "Uva":
+                this.suco = new SaborSucoDecorator(this.suco, nomeSubopcao);
+                break;
+            default:
+                throw new ItemNaoEncontradoException("O sabor " + nomeSubopcao + " não existe para este suco.");
         }
+        return this;
+    }
 
-        if (querAcucar == 1) {
+    @Override
+    public BebidaBuilder comAdicional(String nomeAdicional) {
+        if (nomeAdicional == null)
+            return this;
+
+        if (nomeAdicional.equals("Com Açucar")) {
             this.suco = new AcucarDecorator(this.suco);
+        } else {
+            throw new ItemNaoEncontradoException("O adicional " + nomeAdicional + " não é válido para este suco.");
         }
-
         return this;
     }
 
@@ -59,12 +63,11 @@ public class SucoBuilder implements BebidaBuilder {
     @Override
     public ItemCardapioInfo obterInformacaoComercial() {
         Bebida base = new com.projetocafeteria.model.bebida.Suco();
-        
+
         return new ItemCardapioInfo(
-            base.exibirDescricao(),
-            base.getValor(),
-            List.of("Laranja", "Abacaxi", "Morango", "Uva"),
-            List.of("Com Açucar")
-        );
+                base.exibirDescricao(),
+                base.getValor(),
+                List.of("Laranja", "Abacaxi", "Morango", "Uva"),
+                List.of("Com Açucar"));
     }
 }

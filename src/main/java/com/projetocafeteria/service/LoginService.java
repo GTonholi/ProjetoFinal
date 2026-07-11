@@ -1,9 +1,8 @@
 package com.projetocafeteria.service;
 
-import java.util.Scanner;
-
 import com.projetocafeteria.model.Funcionario;
 import com.projetocafeteria.repository.FuncionarioRepository;
+import com.projetocafeteria.repository.IFuncionarioRepository;
 
 /**
  * Service responsible for authenticating employees and tracking the
@@ -19,12 +18,16 @@ public class LoginService {
     private boolean logado;
     private int idFuncionarioLogado;
     private String nomeFuncionarioLogado;
-    private final FuncionarioRepository funcionarioRepository;
-    private final Scanner sc;
+    private final IFuncionarioRepository funcionarioRepository;
 
-    public LoginService(Scanner sc) {
+    /**
+     * Constructs a new LoginService and initializes its state to logged out.
+     */
+    public LoginService() {
+        this.logado = false;
+        this.idFuncionarioLogado = -1;
+        this.nomeFuncionarioLogado = null;
         this.funcionarioRepository = new FuncionarioRepository();
-        this.sc = sc;
     }
 
     /**
@@ -36,11 +39,11 @@ public class LoginService {
         return this.logado;
     }
 
-     /**
+    /**
      * Logs out the currently authenticated employee, clearing the session
      * state.
      */
-    public void deslogar(){
+    public void deslogar() {
         this.logado = false;
         this.idFuncionarioLogado = 0;
         this.nomeFuncionarioLogado = null;
@@ -58,42 +61,32 @@ public class LoginService {
     /**
      * Returns the name of the currently logged-in employee.
      *
-     * @return the logged-in employee's name, or {@code null} if no employee is logged in
+     * @return the logged-in employee's name, or {@code null} if no employee is
+     *         logged in
      */
     public String getNomeFuncionarioLogado() {
         return nomeFuncionarioLogado;
     }
 
     /**
-     * Prompts for login credentials and attempts to authenticate the
-     * employee, allowing up to three attempts.
+     * Attempts to authenticate the employee using the provided credentials.
      * <p>
      * On successful authentication, the session is marked as logged in
-     * and the employee's id and name are retained for later use. If all
-     * attempts are exhausted without a match, the method returns without
-     * authenticating (the caller is expected to check
-     * {@link #isUsuarioLogado()} afterward).
+     * and the employee's id and name are retained for later use.
+     * 
+     * @param login the login identifier to authenticate
+     * @param senha the password to authenticate
+     * @return {@code true} if authentication succeeds, {@code false} otherwise
      */
-    public void logarFuncionario() {
-        int tentativas = 3;
+    public boolean logarFuncionario(String login, String senha) {
+        Funcionario encontrado = funcionarioRepository.buscarPorLoginESenha(login, senha);
 
-        while (tentativas > 0 && !logado) {
-            System.out.print("\n\nLogin: ");
-            String login = sc.nextLine().trim();
-            System.out.print("Senha: ");
-            String senha = sc.nextLine().trim();
-
-            Funcionario encontrado = funcionarioRepository.buscarPorLoginESenha(login, senha);
-
-            if (encontrado != null) {
-                this.idFuncionarioLogado = encontrado.getId();
-                this.nomeFuncionarioLogado = encontrado.getNome();
-                this.logado = true;
-                System.out.println("\nLogin realizado com sucesso!");
-            } else {
-                tentativas--;
-                System.out.println("\nLogin ou senha inválidos. Tentativas restantes: " + tentativas);
-            }
+        if (encontrado != null) {
+            this.idFuncionarioLogado = encontrado.getId();
+            this.nomeFuncionarioLogado = encontrado.getNome();
+            this.logado = true;
+            return true;
         }
+        return false;
     }
 }

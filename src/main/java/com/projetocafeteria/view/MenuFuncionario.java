@@ -22,9 +22,9 @@ public class MenuFuncionario {
     private final LoginService loginService;
     private final Scanner sc;
 
-    public MenuFuncionario(Scanner sc){
+    public MenuFuncionario(Scanner sc) {
         this.sc = sc;
-        this.loginService = new LoginService(this.sc);
+        this.loginService = new LoginService();
     }
 
     /**
@@ -36,9 +36,9 @@ public class MenuFuncionario {
      * @param painelPedidos the shared order panel, used to list and update
      *                      in-progress orders
      */
-    public void run(PainelPedidos painelPedidos){
-        if(!loginService.isUsuarioLogado()){
-            loginService.logarFuncionario();
+    public void run(PainelPedidos painelPedidos, com.projetocafeteria.repository.IPedidoRepository pedidoRepository) {
+        if (!loginService.isUsuarioLogado()) {
+            logarFuncionario();
         }
 
         if (!loginService.isUsuarioLogado()) {
@@ -50,23 +50,40 @@ public class MenuFuncionario {
         while (logado && loginService.isUsuarioLogado()) {
             try {
                 int escolha = selecionarOpcao();
-                
+
                 if (escolha == 2) {
                     loginService.deslogar();
                     logado = false;
                     System.out.println("\nLogout efetuado com sucesso.");
                 } else {
-                    processarEscolha(escolha, painelPedidos);
+                    processarEscolha(escolha, painelPedidos, pedidoRepository);
                 }
-                
+
             } catch (ItemNaoEncontradoException e) {
                 System.out.println("\n[ERRO DE SISTEMA] " + e.getMessage());
                 System.out.println("Retornando ao menu do funcionário...");
             }
         }
     }
-    
-     /**
+
+    private void logarFuncionario() {
+        int tentativas = 3;
+        while (tentativas > 0 && !loginService.isUsuarioLogado()) {
+            System.out.print("\n\nLogin: ");
+            String login = sc.nextLine().trim();
+            System.out.print("Senha: ");
+            String senha = sc.nextLine().trim();
+
+            if (loginService.logarFuncionario(login, senha)) {
+                System.out.println("\nLogin realizado com sucesso!");
+            } else {
+                tentativas--;
+                System.out.println("\nLogin ou senha inválidos. Tentativas restantes: " + tentativas);
+            }
+        }
+    }
+
+    /**
      * Prompts the employee to select an option from the employee menu and
      * validates the input until a valid numeric option is provided.
      *
@@ -74,7 +91,7 @@ public class MenuFuncionario {
      */
     private int selecionarOpcao() {
         exibirMenu();
-        
+
         while (true) {
             try {
                 System.out.print("Opção: ");
@@ -110,9 +127,10 @@ public class MenuFuncionario {
      * @throws ItemNaoEncontradoException if the provided option does not
      *                                    match any valid menu case
      */
-    private void processarEscolha(int escolha, PainelPedidos painelPedidos) {
+    private void processarEscolha(int escolha, PainelPedidos painelPedidos,
+            com.projetocafeteria.repository.IPedidoRepository pedidoRepository) {
         switch (escolha) {
-            case 1 -> atualizarEstadoPedido(painelPedidos);
+            case 1 -> atualizarEstadoPedido(painelPedidos, pedidoRepository);
             default -> throw new ItemNaoEncontradoException("A opção de menu " + escolha + " não existe.");
         }
     }
@@ -125,27 +143,27 @@ public class MenuFuncionario {
      * order to update, and advances its preparation status by one step
      * if it has not yet been delivered.
      *
-     * @param painelPedidos the shared order panel, used to list and locate orders
+     * @param painelPedidos    the shared order panel, used to list orders
+     * @param pedidoRepository the repository used to locate orders
      * @throws ItemNaoEncontradoException if no order matches the id provided
      *                                    by the employee
      */
-    private void atualizarEstadoPedido(PainelPedidos painelPedidos) {
-        List<Pedido> emAndamento = painelPedidos.listarPedidosEmAndamento();
+    private void atualizarEstadoPedido(PainelPedidos painelPedidos,
+            com.projetocafeteria.repository.IPedidoRepository pedidoRepository) {
+        List<Pedido> emAndamento = pedidoRepository.listarPedidosEmAndamento();
 
-        if(emAndamento.isEmpty()){
+        if (emAndamento.isEmpty()) {
             System.out.println("Nenhum pedido em andamento no momento.");
             return;
         }
 
         System.out.println("=== Pedidos em andamento ===");
-        for(Pedido pedido : emAndamento) {
-            System.out.printf("\nPedido #"+ pedido.getId() +" - Cliente: "+ pedido.getNomeCliente() +" - Estado atual: "+ pedido.consultarPreparo());
-        }
+        painelPedidos.exibir(emAndamento);
 
         System.out.print("\n\nDigite o id do pedido que deseja atualizar: ");
         int id = lerId();
 
-        Pedido pedido = painelPedidos.buscarPorId(id);
+        Pedido pedido = pedidoRepository.buscarPorId(id);
 
         if (pedido == null) {
             throw new ItemNaoEncontradoException("O pedido com o ID #" + id + " não foi localizado no painel.");
@@ -176,4 +194,3 @@ public class MenuFuncionario {
         }
     }
 }
-

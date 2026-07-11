@@ -1,7 +1,6 @@
 package com.projetocafeteria.model.bebida.builders;
 
 import java.util.List;
-import java.util.Scanner;
 
 import com.projetocafeteria.exception.ItemNaoEncontradoException;
 import com.projetocafeteria.model.ItemCardapioInfo;
@@ -9,6 +8,14 @@ import com.projetocafeteria.model.bebida.Bebida;
 import com.projetocafeteria.model.bebida.Cappuccino;
 import com.projetocafeteria.model.bebida.decorators.AdicionalCappuccinoDecorator;
 
+/**
+ * Concrete Builder for creating {@link com.projetocafeteria.model.bebida.Cappuccino} objects.
+ * <p>
+ * Implements the {@link BebidaBuilder} interface to construct a customized cappuccino.
+ * Customers can add specific toppings such as Cinnamon ("Canela") or 
+ * Chocolate Powder ("Chocolate em Pó"). These additions are managed via the 
+ * {@link CanelaDecorator} and {@link ChocolateDecorator}.
+ */
 public class CappuccinoBuilder implements BebidaBuilder {
     private Bebida cappuccino;
 
@@ -17,18 +24,22 @@ public class CappuccinoBuilder implements BebidaBuilder {
     }
 
     @Override
-    public BebidaBuilder interagirComUsuario(Scanner scanner) {
-        System.out.println("\nDeseja algum adicional no seu Cappuccino? +R$1.0");
-        System.out.println("  [1] Nenhum (Tradicional)\n  [2] Canela\n  [3] Chocolate em Pó");
-        System.out.print("Opção: ");
-        int opcao = scanner.nextInt();
-        scanner.nextLine();
+    public BebidaBuilder comSubopcao(String nomeSubopcao) {
+        return this; // No sub-options for Cappuccino
+    }
 
-        switch (opcao) {
-            case 1 -> {}
-            case 2 -> this.cappuccino = new AdicionalCappuccinoDecorator(this.cappuccino, "Canela");
-            case 3 -> this.cappuccino = new AdicionalCappuccinoDecorator(this.cappuccino, "Chocolate em Pó");
-            default -> throw new ItemNaoEncontradoException("Opção inválida (" + opcao + ") para o adicional do Cappuccino.");
+    @Override
+    public BebidaBuilder comAdicional(String nomeAdicional) {
+        if (nomeAdicional == null)
+            return this;
+
+        switch (nomeAdicional) {
+            case "Canela":
+            case "Chocolate em Pó":
+                this.cappuccino = new AdicionalCappuccinoDecorator(this.cappuccino, nomeAdicional);
+                break;
+            default:
+                throw new ItemNaoEncontradoException("O adicional " + nomeAdicional + " não é válido para cappuccino.");
         }
         return this;
     }
@@ -41,12 +52,11 @@ public class CappuccinoBuilder implements BebidaBuilder {
     @Override
     public ItemCardapioInfo obterInformacaoComercial() {
         Bebida base = new com.projetocafeteria.model.bebida.Cappuccino();
-        
+
         return new ItemCardapioInfo(
-            base.exibirDescricao(),
-            base.getValor(),
-            List.of(),
-            List.of("Canela" , "Chocolate em Pó")
-        );
+                base.exibirDescricao(),
+                base.getValor(),
+                List.of(),
+                List.of("Canela", "Chocolate em Pó"));
     }
 }

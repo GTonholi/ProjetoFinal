@@ -1,42 +1,37 @@
 package com.projetocafeteria.model.bebida.builders;
 
-import java.util.Scanner;
-
 import com.projetocafeteria.model.DisponivelNoCardapio;
 import com.projetocafeteria.model.bebida.Bebida;
 
 /**
- * Builder contract for constructing a customized {@link Bebida} instance
- * through direct interaction with the customer.
+ * Builder contract for constructing a customized {@link Bebida} instance.
  * <p>
- * Each concrete implementation is responsible for prompting the customer for any
- * relevant customizations via {@link #interagirComUsuario(Scanner)},
- * then producing the final, possibly decorated {@link Bebida} instance via {@link #construir()}.
- * <p>
- * 
- * Instances of this interface are obtained fresh for each customer
- * interaction, so builder implementations may safely hold mutable state
- * collected during {@link #interagirComUsuario(Scanner)}.
- * 
+ * Customizations are passed as strings (e.g. from a UI layer) without the 
+ * domain needing to know about I/O devices (like Scanner).
  */
 public interface BebidaBuilder extends DisponivelNoCardapio {
 
     /**
-     * Prompts the customer, via the given scanner, for any customizations
-     * available for this drink, storing the customer's choices in this builder's internal state.
-     *
-     * @param scanner the shared scanner used to read the customer's input
-     * @return this builder, allowing the call to be chained directly into
-     *         {@link #construir()}
+     * Applies a sub-option (e.g., flavor or type) to the drink being built.
      * 
+     * @param nomeSubopcao the chosen sub-option's name
+     * @return this builder
      */
-    BebidaBuilder interagirComUsuario(Scanner scanner);
+    BebidaBuilder comSubopcao(String nomeSubopcao);
 
     /**
-     * Produces the final {@link Bebida} instance reflecting the
-     * customizations collected via {@link #interagirComUsuario(Scanner)}.
+     * Customizes the drink item with a specific add-on (e.g., sugar, milk).
      * 
-     * @return the constructed, ready-to-add-to-cart drink item
+     * @param nomeAdicional the exact string name of the chosen add-on. 
+     *                      If {@code null}, no add-on is applied.
+     * @return the current builder instance for method chaining
+     */
+    BebidaBuilder comAdicional(String nomeAdicional);
+
+    /**
+     * Finalizes the building process and returns the fully constructed drink item.
+     * 
+     * @return the constructed {@link Bebida} instance, potentially wrapped in decorators
      */
     Bebida construir();
 }

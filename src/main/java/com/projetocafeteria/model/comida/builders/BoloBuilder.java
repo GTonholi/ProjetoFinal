@@ -1,7 +1,6 @@
 package com.projetocafeteria.model.comida.builders;
 
 import java.util.List;
-import java.util.Scanner;
 
 import com.projetocafeteria.exception.ItemNaoEncontradoException;
 import com.projetocafeteria.model.ItemCardapioInfo;
@@ -10,6 +9,14 @@ import com.projetocafeteria.model.comida.Comida;
 import com.projetocafeteria.model.comida.decorators.CoberturaDecorator;
 import com.projetocafeteria.model.comida.decorators.SaborBoloDecorator;
 
+/**
+ * Concrete Builder for creating {@link com.projetocafeteria.model.comida.Bolo} objects.
+ * <p>
+ * Implements the {@link ComidaBuilder} interface to construct a customized cake.
+ * Requires a mandatory flavor sub-option (e.g., Chocolate, Laranja, Formigueiro) 
+ * via {@link SaborBoloDecorator}. Customers can also choose to add extra 
+ * frosting ("Cobertura") via {@link CoberturaDecorator}, increasing its base price.
+ */
 public class BoloBuilder implements ComidaBuilder {
     private Comida bolo;
 
@@ -18,33 +25,32 @@ public class BoloBuilder implements ComidaBuilder {
     }
 
     @Override
-    public ComidaBuilder interagirComUsuario(Scanner scanner) {
-        System.out.println("\nEscolha o sabor do bolo:");
-        System.out.println("  [1] Chocolate\n  [2] Laranja\n  [3] Formigueiro");
-        System.out.print("Opção: ");
-        int opcaoSabor = scanner.nextInt();
-        scanner.nextLine();
+    public ComidaBuilder comSubopcao(String nomeSubopcao) {
+        if (nomeSubopcao == null)
+            return this;
 
-        String sabor = switch (opcaoSabor) {
-            case 1 -> "Chocolate";
-            case 2 -> "Laranja";
-            case 3 -> "Formigueiro";
-            default -> throw new ItemNaoEncontradoException("O sabor de número " + opcaoSabor + " não existe.");
-        };
-        this.bolo = new SaborBoloDecorator(this.bolo, sabor);
-
-        System.out.print("Deseja adicionar cobertura? +R$3.0 (1 - Sim / 2 - Não): ");
-        int querCobertura = scanner.nextInt();
-        scanner.nextLine();
-
-        if (querCobertura != 1 && querCobertura != 2) {
-            throw new ItemNaoEncontradoException("Opção inválida (" + querCobertura + ") para a cobertura.");
+        switch (nomeSubopcao) {
+            case "Chocolate":
+            case "Laranja":
+            case "Formigueiro":
+                this.bolo = new SaborBoloDecorator(this.bolo, nomeSubopcao);
+                break;
+            default:
+                throw new ItemNaoEncontradoException("O sabor " + nomeSubopcao + " não existe para este bolo.");
         }
+        return this;
+    }
 
-        if (querCobertura == 1) {
+    @Override
+    public ComidaBuilder comAdicional(String nomeAdicional) {
+        if (nomeAdicional == null)
+            return this;
+
+        if (nomeAdicional.equals("Cobertura (+R$ 3,00)")) {
             this.bolo = new CoberturaDecorator(this.bolo);
+        } else {
+            throw new ItemNaoEncontradoException("O adicional " + nomeAdicional + " não é válido para este bolo.");
         }
-
         return this;
     }
 
@@ -56,12 +62,11 @@ public class BoloBuilder implements ComidaBuilder {
     @Override
     public ItemCardapioInfo obterInformacaoComercial() {
         Comida base = new com.projetocafeteria.model.comida.Bolo();
-        
+
         return new ItemCardapioInfo(
-            base.exibirDescricao(),
-            base.getValor(),
-            List.of("Chocolate", "Laranja", "Formigueiro"),
-            List.of("Cobertura (+R$ 3,00)")
-        );
+                base.exibirDescricao(),
+                base.getValor(),
+                List.of("Chocolate", "Laranja", "Formigueiro"),
+                List.of("Cobertura (+R$ 3,00)"));
     }
 }

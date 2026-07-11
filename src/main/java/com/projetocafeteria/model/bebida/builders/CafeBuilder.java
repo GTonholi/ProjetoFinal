@@ -1,7 +1,6 @@
 package com.projetocafeteria.model.bebida.builders;
 
 import java.util.List;
-import java.util.Scanner;
 
 import com.projetocafeteria.exception.ItemNaoEncontradoException;
 import com.projetocafeteria.model.ItemCardapioInfo;
@@ -9,6 +8,14 @@ import com.projetocafeteria.model.bebida.Bebida;
 import com.projetocafeteria.model.bebida.Cafe;
 import com.projetocafeteria.model.bebida.decorators.LeiteDecorator;
 
+/**
+ * Concrete Builder for creating {@link com.projetocafeteria.model.bebida.Cafe} objects.
+ * <p>
+ * Implements the {@link BebidaBuilder} interface to construct a customized coffee.
+ * Customers can optionally add milk ("Leite") to the coffee, which is dynamically 
+ * applied using the {@link LeiteDecorator} to increase the total price and 
+ * update the description.
+ */
 public class CafeBuilder implements BebidaBuilder {
     private Bebida cafe;
 
@@ -17,17 +24,25 @@ public class CafeBuilder implements BebidaBuilder {
     }
 
     @Override
-    public BebidaBuilder interagirComUsuario(Scanner scanner) {
-        System.out.println("Deseja adicionar leite? +R$ 1.5  (1 - Sim / 2 - Não)");
-        int querLeite = scanner.nextInt();
-        scanner.nextLine();
+    public BebidaBuilder comSubopcao(String nomeSubopcao) {
+        if (nomeSubopcao == null)
+            return this;
 
-        if (querLeite != 1 && querLeite != 2) {
-            throw new ItemNaoEncontradoException("Opção inválida (" + querLeite + ") para o adicional de leite.");
+        if (!nomeSubopcao.equals("Preto")) {
+            throw new ItemNaoEncontradoException("O sabor " + nomeSubopcao + " não existe para este café.");
         }
+        return this;
+    }
 
-        if (querLeite == 1) {
+    @Override
+    public BebidaBuilder comAdicional(String nomeAdicional) {
+        if (nomeAdicional == null)
+            return this;
+
+        if (nomeAdicional.equals("Leite (+R$ 1,50)")) {
             this.cafe = new LeiteDecorator(this.cafe);
+        } else {
+            throw new ItemNaoEncontradoException("O adicional " + nomeAdicional + " não é válido para este café.");
         }
         return this;
     }
@@ -40,12 +55,11 @@ public class CafeBuilder implements BebidaBuilder {
     @Override
     public ItemCardapioInfo obterInformacaoComercial() {
         Bebida base = new com.projetocafeteria.model.bebida.Cafe();
-        
+
         return new ItemCardapioInfo(
-            base.exibirDescricao(),
-            base.getValor(),
-            List.of("Preto"),
-            List.of("Leite (+R$ 1,50)")
-        );
+                base.exibirDescricao(),
+                base.getValor(),
+                List.of("Preto"),
+                List.of("Leite (+R$ 1,50)"));
     }
 }

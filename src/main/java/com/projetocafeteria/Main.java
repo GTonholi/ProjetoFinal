@@ -22,24 +22,26 @@ import com.projetocafeteria.view.PainelPedidos;
  * caught and reported to the user without terminating the program.
  *
  */
-public class Main{
+public class Main {
 
     /**
      * Application entry point.
      */
     public static void main(String[] args) {
         try (Scanner sc = new Scanner(System.in)) {
+            com.projetocafeteria.repository.IPedidoRepository pedidoRepository = new com.projetocafeteria.repository.InMemoryPedidoRepository();
             PainelPedidos painelPedidos = new PainelPedidos();
-            PedidoService pedidoService = new PedidoService(sc);
+            PedidoService pedidoService = new PedidoService(pedidoRepository);
 
             MenuCliente menuCliente = new MenuCliente(sc);
             MenuFuncionario menuFuncionario = new MenuFuncionario(sc);
-        
+
             boolean continuar = true;
-            while(continuar){
-                try { 
+            while (continuar) {
+                try {
                     int escolha = selecionarOpcao(sc);
-                    continuar = processarEscolha(escolha, painelPedidos, pedidoService, menuCliente, menuFuncionario);
+                    continuar = processarEscolha(escolha, painelPedidos, pedidoRepository, pedidoService, menuCliente,
+                            menuFuncionario);
                 } catch (ItemNaoEncontradoException e) {
                     System.out.println("\n[AVISO DO SISTEMA] " + e.getMessage());
                     System.out.println("Retornando ao menu principal da cafeteria...");
@@ -61,7 +63,7 @@ public class Main{
      */
     private static int selecionarOpcao(Scanner sc) {
         exibirMenu();
-        
+
         while (true) {
             try {
                 System.out.print("Opção: ");
@@ -87,12 +89,16 @@ public class Main{
         System.out.println("[0] Sair");
     }
 
-    private static boolean processarEscolha(int escolha, PainelPedidos painelPedidos, PedidoService pedidoService, MenuCliente menuCliente, MenuFuncionario menuFuncionario) {
+    private static boolean processarEscolha(int escolha, PainelPedidos painelPedidos,
+            com.projetocafeteria.repository.IPedidoRepository pedidoRepository, PedidoService pedidoService,
+            MenuCliente menuCliente, MenuFuncionario menuFuncionario) {
         switch (escolha) {
-            case 0 -> { return false; }
-            case 1 -> painelPedidos.exibir();
-            case 2 -> menuCliente.run(pedidoService, painelPedidos);
-            case 3 -> menuFuncionario.run(painelPedidos);
+            case 0 -> {
+                return false;
+            }
+            case 1 -> painelPedidos.exibir(pedidoRepository.listarPedidosEmAndamento());
+            case 2 -> menuCliente.run(pedidoService, painelPedidos, pedidoRepository);
+            case 3 -> menuFuncionario.run(painelPedidos, pedidoRepository);
             default -> throw new ItemNaoEncontradoException("A opção global " + escolha + " não é válida.");
         }
         return true;
