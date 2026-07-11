@@ -8,8 +8,25 @@ import com.projetocafeteria.view.MenuCliente;
 import com.projetocafeteria.view.MenuFuncionario;
 import com.projetocafeteria.view.PainelPedidos;
 
+/**
+ * Entry point of the cafeteria management system.
+ * <p>
+ * This class is responsible for bootstrapping the application's core
+ * dependencies (shared {@link Scanner}, {@link PainelPedidos},
+ * {@link PedidoService}, and the client/employee menu views) and running
+ * the main application loop, which repeatedly presents the global menu
+ * until the user chooses to exit.
+ * <p>
+ * The main loop is resilient to invalid menu selections: an
+ * {@link ItemNaoEncontradoException} thrown during option processing is
+ * caught and reported to the user without terminating the program.
+ *
+ */
 public class Main{
 
+    /**
+     * Application entry point.
+     */
     public static void main(String[] args) {
         try (Scanner sc = new Scanner(System.in)) {
             PainelPedidos painelPedidos = new PainelPedidos();
@@ -32,6 +49,16 @@ public class Main{
         }
     }
 
+    /**
+     * Prompts the user to select an option from the main menu and validates
+     * the input until a valid numeric option (0 to 3) is provided.
+     * <p>
+     * Non-numeric input is rejected with a warning message, and the prompt
+     * is repeated until valid input is entered.
+     *
+     * @param sc the shared {@link Scanner} used to read user input
+     * @return the validated menu option selected by the user (0, 1, 2, or 3)
+     */
     private static int selecionarOpcao(Scanner sc) {
         exibirMenu();
         
@@ -49,6 +76,9 @@ public class Main{
         }
     }
 
+    /**
+     * Prints the main menu options to the console.
+     */
     private static void exibirMenu() {
         System.out.println("\n\n[1] Visualizar painel de pedidos ");
         System.out.println("Acessar como:");

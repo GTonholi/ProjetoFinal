@@ -5,6 +5,17 @@ import java.util.Scanner;
 import com.projetocafeteria.exception.ItemNaoEncontradoException;
 import com.projetocafeteria.service.PedidoService;
 
+/**
+ * View responsible for the customer-facing interaction flow.
+ * <p>
+ * Presents a menu loop allowing the customer to view the informative menu,
+ * place a new order, or view the order panel, until the customer chooses
+ * to return to the application's main screen.
+ * <p>
+ * The menu loop is resilient to invalid selections: an
+ * {@link ItemNaoEncontradoException} thrown while processing an option is
+ * caught and reported without exiting the customer session.
+ */
 public class MenuCliente {
     private final Scanner sc;
 
@@ -12,6 +23,14 @@ public class MenuCliente {
         this.sc = sc;
     }
     
+    /**
+     * Runs the customer interaction flow, repeatedly presenting the client
+     * menu until the customer chooses to return to the main screen.
+     *
+     * @param pedidoService the service responsible for order creation and
+     *                      displaying the informative menu
+     * @param painelPedidos the shared order panel, used to display registered orders
+     */
     public void run(PedidoService pedidoService, PainelPedidos painelPedidos) {
         boolean rodando = true;
         
@@ -26,6 +45,14 @@ public class MenuCliente {
             }
         }
     }
+
+    /**
+     * Prompts the customer to select an option from the client menu and
+     * validates the input until a valid numeric option is provided.
+     *
+     * @param sc the shared {@link Scanner} used to read user input
+     * @return the validated menu option selected by the customer
+     */
     private static int selecionarOpcao(Scanner sc) {
         exibirMenu();
         
@@ -43,6 +70,9 @@ public class MenuCliente {
         }
     }
 
+    /**
+     * Prints the client menu options to the console.
+     */
     private static void exibirMenu() {
         System.out.println("\n        BEM-VINDO À CAFETERIA         \n");
         System.out.println("Em que podemos ajudar?\n");
@@ -52,6 +82,19 @@ public class MenuCliente {
         System.out.println("[0] Voltar");
     }
 
+    /**
+     * Executes the action corresponding to the selected client menu
+     * option.
+     *
+     * @param escolha       the validated menu option selected by the customer
+     * @param pedidoService the service responsible for order creation and
+     *                      displaying the informative menu
+     * @param painelPedidos the shared order panel, used to display registered orders
+     * @return {@code true} if the client menu loop should continue running,
+     *         {@code false} if the customer chose to return to the main screen
+     * @throws ItemNaoEncontradoException if the provided option does not
+     *                                    match any valid menu case
+     */
     private static boolean processarEscolha(int escolha, PedidoService pedidoService, PainelPedidos painelPedidos) {
         switch (escolha) {
             case 1 -> pedidoService.mostrarCardapioInformativo();
