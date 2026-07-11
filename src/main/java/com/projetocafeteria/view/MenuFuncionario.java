@@ -202,7 +202,7 @@ public class MenuFuncionario {
     }
 
     private void limparTela() {
-        System.out.print("\033[H\033[2J");
+        System.out.print("\033[H\033[2J\033[95m");
         System.out.flush();
     }
     

@@ -55,6 +55,7 @@ public class Main {
                 }
             }
             System.out.println("\nEncerrando o sistema. Até logo!");
+            System.out.print("\033[0m");
         }
     }
 
@@ -115,7 +116,7 @@ public class Main {
     }
 
     private static void limparTela() {
-        System.out.print("\033[H\033[2J");
+        System.out.print("\033[H\033[2J\033[95m");
         System.out.flush();
     }
     
