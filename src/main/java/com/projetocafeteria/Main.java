@@ -50,7 +50,7 @@ public class Main{
     }
 
     private static void exibirMenu() {
-        System.out.println("\n[1] Visualizar painel de pedidos ");
+        System.out.println("\n\n[1] Visualizar painel de pedidos ");
         System.out.println("Acessar como:");
         System.out.println("[2] Cliente");
         System.out.println("[3] Funcionário");

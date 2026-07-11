@@ -91,7 +91,7 @@ public class MenuFuncionario {
             System.out.printf("\nPedido #"+ pedido.getId() +" - Cliente: "+ pedido.getNomeCliente() +" - Estado atual: "+ pedido.consultarPreparo());
         }
 
-        System.out.print("Digite o id do pedido que deseja atualizar: ");
+        System.out.print("\n\nDigite o id do pedido que deseja atualizar: ");
         int id = lerId();
 
         Pedido pedido = painelPedidos.buscarPorId(id);

@@ -9,7 +9,6 @@ public class Pedido {
 
     private final int id;
     private final Cliente cliente;
-    //private Funcionario atendente; // ainda não sei se vai ser necessário
     private StatusPedido status; 
     private Preparo preparo;
     private final Carrinho carrinho = new Carrinho();
