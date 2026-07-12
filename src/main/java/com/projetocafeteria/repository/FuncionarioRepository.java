@@ -36,8 +36,8 @@ public final class FuncionarioRepository implements IFuncionarioRepository {
      * 
      */
     public FuncionarioRepository(){
-        cadastrar("Ana Souza", "ana", "1234");
-        cadastrar("Carlos Lima", "carlos", "abcd");
+        cadastrar("Ana Souza", "ana", "1234" );
+        cadastrar("Carlos Lima", "carlos", "abcd" );
     }
 
     /**
@@ -49,6 +49,7 @@ public final class FuncionarioRepository implements IFuncionarioRepository {
      * @param senha the employee's password
      * @return the newly created {@link Funcionario}, with its id already assigned
      */
+    @Override
     public Funcionario cadastrar(String nome, String login, String senha) {
         Funcionario f = new Funcionario(proximoId++, nome, login, senha);
         funcionarios.add(f);
@@ -61,6 +62,7 @@ public final class FuncionarioRepository implements IFuncionarioRepository {
      * @return the unmodifiable list of all registered {@link Funcionario} instances;
      *         never {@code null}
      */
+    @Override
     public List<Funcionario> listarTodos() {
         return Collections.unmodifiableList(funcionarios);
     }
@@ -78,6 +80,7 @@ public final class FuncionarioRepository implements IFuncionarioRepository {
      * @return the matching {@link Funcionario}, or {@code null} if no
      *         employee matches the given credentials
      */
+    @Override
     public Funcionario buscarPorLoginESenha(String login, String senha) {
         for (Funcionario f : funcionarios) {
             if (f.autenticar(login, senha)) {
